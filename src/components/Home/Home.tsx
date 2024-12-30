@@ -1,7 +1,7 @@
 'use client';
 
 import React, {useState} from "react";
-import "../../App/assets/custom.css";
+// import "../../App/assets/custom.css";
 
 const Home: React.FC = () => {
   // const [count, setCount] = useState(0);

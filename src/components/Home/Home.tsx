@@ -2,7 +2,7 @@
 
 import React, {useState} from "react";
 import Link from "next/link";
-import "../../App/assets/custom.css";
+import "@/App/assets/custom.css";
 
 const Home: React.FC = () => {
   const [poliklinikCount, setPoliklinikCount] = useState<any>([]);

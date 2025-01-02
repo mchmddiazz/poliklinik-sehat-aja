@@ -5,11 +5,18 @@ html, body {
   margin: 0;
   padding: 0;
 }
-
 .container {
   margin: 0 auto;
 }
-
 .ticket-wrapper {
   text-align: center;
+}
+.container-login {
+  width: 100%;
+  min-height: 100vh;
+  background: #23074d;
+  background: -webkit-linear-gradient(-135deg, #ff0018, #de8107);
+  background: -o-linear-gradient(-135deg, #ff0018, #de8107);
+  background: -moz-linear-gradient(-135deg, #ff0018, #de8107);
+  background: linear-gradient(-135deg, #ff0018, #de8107);
 }

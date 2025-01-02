@@ -6,7 +6,7 @@ export async function GET() {
     // Query to get count of users grouped by poliklinik
     const [poliklinikCount]: any = await db.query(`
       SELECT poliklinik, COUNT(*) AS total, DATE(created_at) AS date
-      FROM user
+      FROM pasien
       WHERE DATE(created_at) = CURDATE()
       GROUP BY poliklinik
     `);

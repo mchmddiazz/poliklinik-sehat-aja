@@ -50,7 +50,7 @@ export async function POST(req: Request) {
 
     // SQL query to insert data
     const sql = `
-      INSERT INTO user 
+      INSERT INTO pasien 
       (nama, jenis_kelamin, usia, poliklinik, tanggal_lahir, status_ticket, kartu_berobat, nomor_pendaftaran, created_at, last_update)
       VALUES (?, ?, ?, ?, ?, 'waiting', ?, ?, NOW(), NOW())`;
     const values = [

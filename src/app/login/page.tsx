@@ -31,7 +31,7 @@ const Login: React.FC = () => {
             router.push('/apoteker/dashboard');
             break;
           default:
-            router.push('/dashboard');
+            router.push('/');
         }
       } else {
         alert('Login failed: ' + data.message);

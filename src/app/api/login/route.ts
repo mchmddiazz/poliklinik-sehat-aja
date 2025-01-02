@@ -10,19 +10,28 @@ export async function POST(req: Request) {
       [username, password]
     );
 
+    const check_role = user[0]
+
     if (user) {
-      return NextResponse.json({
-        success: true,
-        role: user.role,
-        message: 'Login successful',
-      });
+      if (['admin', 'dokter', 'apoteker'].includes(check_role['role'])) {
+        return NextResponse.json({
+          success: true,
+          role: check_role['role'],
+          message: 'Login successful',
+        });
+      } else {
+        return NextResponse.json({
+          success: false,
+          message: 'Unauthorized role',
+        });
+      }
     } else {
       return NextResponse.json({
         success: false,
         message: 'Invalid credentials',
       });
     }
-  } catch (error) {
+  } catch (error: any) {
     return NextResponse.json(
       {
         success: false,

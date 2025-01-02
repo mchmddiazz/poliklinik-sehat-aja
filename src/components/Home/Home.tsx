@@ -1,9 +1,14 @@
 'use client';
 
 import React, {useState} from "react";
-// import "../../App/assets/custom.css";
+import Link from "next/link";
+import "../../App/assets/custom.css";
 
 const Home: React.FC = () => {
+  const [poliklinikCount, setPoliklinikCount] = useState<any>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  
   // const [count, setCount] = useState(0);
   // const handleClick = () => {
   //   setCount(count + 1); // Increment the count by 1
@@ -21,16 +26,16 @@ const Home: React.FC = () => {
           <h1 className="mb-14 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl">Unit Pengobatan</h1>
           <div className="flex items-center justify-center unit-container w-2/4 m-auto">
             <div className="basis-1/4 unit-item px-3">
-              <button className="w-full text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Umum</button>
+              <Link href="/register" className="w-full block text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Umum</Link>
             </div>
             <div className="basis-1/4 unit-item px-3">
-              <button className="w-full text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Bidan</button>
+              <Link href="/register" className="w-full block text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Bidan</Link>
             </div>
             <div className="basis-1/4 unit-item px-3">
-              <button className="w-full text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Anak</button>
+              <Link href="/register" className="w-full block text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Anak</Link>
             </div>
             <div className="basis-1/4 unit-item px-3">
-              <button className="w-full text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Penyakit dalam</button>
+              <Link href="/register" className="w-full block text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Penyakit dalam</Link>
             </div>
           </div>
         </div>

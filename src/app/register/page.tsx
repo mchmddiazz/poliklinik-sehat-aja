@@ -64,7 +64,7 @@ const Register = () => {
           title: "Registration Successful",
           text: result.message || "You have been successfully registered!",
         }).then(function() {
-          window.location = "/";
+          window.location.href = "/";
         });
       } else {
         Swal.fire({

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import db from '../../../lib/db'; // Ensure the path matches the actual case-sensitive file structure
+import db from '@/lib/db'; // Ensure the path matches the actual case-sensitive file structure
 
 // Helper function to generate a unique ID with a prefix and ensure it's unique
 const generateUniqueId = async (

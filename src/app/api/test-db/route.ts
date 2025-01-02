@@ -1,7 +1,7 @@
 // app/api/test-db/route.ts
 
 import { NextResponse } from 'next/server';
-import db from '../../../lib/db'; // Ensure this path matches the case-sensitive file structure
+import db from '@/lib/db'; // Ensure this path matches the case-sensitive file structure
 
 export async function GET() {
   try {

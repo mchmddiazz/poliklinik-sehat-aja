@@ -45,8 +45,8 @@ export async function POST(req: Request) {
     }
 
     // Generate unique identifiers
-    const kartu_berobat = await generateUniqueId('PSA-', 'user', 'kartu_berobat');
-    const nomor_pendaftaran = await generateUniqueId('A-', 'user', 'nomor_pendaftaran');
+    const kartu_berobat = await generateUniqueId('PSA-', 'pasien', 'kartu_berobat');
+    const nomor_pendaftaran = await generateUniqueId('A-', 'pasien', 'nomor_pendaftaran');
 
     // SQL query to insert data
     const sql = `

@@ -40,3 +40,61 @@ export async function GET() {
     );
   }
 }
+
+export async function PUT(req: Request) {
+  try {
+    const { nomor_pendaftaran, status_ticket } = await req.json();
+
+    if (!nomor_pendaftaran || !status_ticket) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Missing required fields',
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validate status_ticket value
+    const validStatuses = ['waiting', 'examined', 'completed'];
+    if (!validStatuses.includes(status_ticket)) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Invalid status ticket value',
+        },
+        { status: 400 }
+      );
+    }
+
+    const [result]: any = await db.query(
+      'UPDATE pasien SET status_ticket = ?, last_update = NOW() WHERE nomor_pendaftaran = ?',
+      [status_ticket, nomor_pendaftaran]
+    );
+
+    if (result.affectedRows === 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Patient not found',
+        },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: 'Status ticket updated successfully',
+    });
+  } catch (error: any) {
+    console.error('Error updating status ticket:', error);
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'Error updating status ticket',
+        error: error.message,
+      },
+      { status: 500 }
+    );
+  }
+}

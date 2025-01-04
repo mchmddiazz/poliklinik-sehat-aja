@@ -1,22 +1,19 @@
 'use client';
-
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Swal from 'sweetalert2';
 
-export default function DiagnosaPage({
-  params,
-}: {
-  params: { ticket_id: string };
-}) {
+export default function DiagnosaPage() {
+  const params = useParams<{ ticket_id: string }>();
+  const ticket_id = params?.ticket_id || '';
   const [diagnosa, setDiagnosa] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (params.ticket_id) {
+    if (ticket_id) {
       setLoading(false);
     }
-  }, [params.ticket_id]);
+  }, [ticket_id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +24,7 @@ export default function DiagnosaPage({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ticket_id: params.ticket_id,
+          ticket_id,
           diagnosa,
         }),
       });
@@ -63,7 +60,7 @@ export default function DiagnosaPage({
   return (
     <div className="container mx-auto p-8">
       <h1 className="text-2xl font-bold mb-4">
-        Diagnose Patient - Ticket ID: {params.ticket_id}
+        Diagnose Patient - Ticket ID: {ticket_id}
       </h1>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">

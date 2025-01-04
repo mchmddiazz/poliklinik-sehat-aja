@@ -4,52 +4,48 @@ import { useParams } from 'next/navigation';
 import Swal from 'sweetalert2';
 
 export default function DiagnosaPage() {
-  const params = useParams<{ ticket_id: string }>();
-  const ticket_id = params?.ticket_id || '';
+  const { ticket_id } = useParams<{ ticket_id: string }>();
   const [diagnosa, setDiagnosa] = useState('');
+  const [resepObat, setResepObat] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (ticket_id) {
       setLoading(false);
+    } else {
+      Swal.fire('Error', 'Ticket ID not found', 'error');
     }
   }, [ticket_id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!ticket_id || !diagnosa || !resepObat) {
+      Swal.fire('Error', 'All fields are required', 'error');
+      return;
+    }
+
+    // console.log(JSON.stringify({ ticket_id, diagnosa, resep_obat: resepObat }))
+    
+
     try {
       const response = await fetch('/api/diagnosa', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ticket_id,
-          diagnosa,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticket_id, diagnosa, resep_obat: resepObat }),
       });
 
       const result = await response.json();
-
-      if (result.success) {
-        Swal.fire({
-          icon: 'success',
-          title: 'Success',
-          text: 'Diagnosis submitted successfully',
+      
+      if (response.ok && result.success) {
+        Swal.fire('Success', 'Diagnosis submitted successfully', 'success').then(function() {
+          window.location.href = '/dokter/dashboard';
         });
       } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: result.message || 'Failed to submit diagnosis',
-        });
+        Swal.fire('Error', result.message || 'Failed to submit diagnosis', 'error');
       }
-    } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Failed to submit diagnosis',
-      });
+    } catch (error: any) {
+      Swal.fire('Error', 'Failed to connect to server', 'error');
     }
   };
 
@@ -58,31 +54,46 @@ export default function DiagnosaPage() {
   }
 
   return (
-    <div className="container mx-auto p-8">
-      <h1 className="text-2xl font-bold mb-4">
-        Diagnose Patient - Ticket ID: {ticket_id}
-      </h1>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label htmlFor="diagnosa" className="block text-sm font-medium text-gray-700">
-            Diagnosis
-          </label>
-          <textarea
-            id="diagnosa"
-            value={diagnosa}
-            onChange={(e) => setDiagnosa(e.target.value)}
-            rows={4}
-            className="mt-1 p-2 block w-full border border-gray-300 rounded-md"
-            required
-          ></textarea>
+    <div className="p-8 bg-gray-50 min-h-screen">
+      <div className="container mx-auto p-8">
+        <div className="mb-8 flex flex-col items-center">
+          <h1 className="text-3xl font-bold text-gray-800">Diagnosis</h1>
+          <p className="mt-2 text-gray-600">Ticket ID: {ticket_id}</p>
         </div>
-        <button
-          type="submit"
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md"
-        >
-          Submit Diagnosis
-        </button>
-      </form>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label htmlFor="diagnosa" className="block text-sm font-medium text-gray-700">
+              Diagnosis
+            </label>
+            <textarea
+              id="diagnosa"
+              value={diagnosa}
+              onChange={(e) => setDiagnosa(e.target.value)}
+              required
+              className="w-full p-2 border rounded-md"
+            />
+          </div>
+          <div>
+            <label htmlFor="resep_obat" className="block text-sm font-medium text-gray-700">
+              Prescription
+            </label>
+            <textarea
+              id="resep_obat"
+              value={resepObat}
+              onChange={(e) => setResepObat(e.target.value)}
+              required
+              className="w-full p-2 border rounded-md"
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md"
+          >
+            Submit
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

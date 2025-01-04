@@ -94,7 +94,7 @@ const PatientTable: React.FC<PatientTableProps> = ({
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Nomor Pendaftaran
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
               Status Ticket
             </th>
             {role === 'admin' && (
@@ -108,12 +108,12 @@ const PatientTable: React.FC<PatientTableProps> = ({
               </>
             )}
             {role === 'dokter' && (
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Action
               </th>
             )}
             {role === 'apoteker' && (
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Action
               </th>
             )}
@@ -150,12 +150,12 @@ const PatientTable: React.FC<PatientTableProps> = ({
                 <div className="flex justify-center">
                   <span className={`px-2 py-1 rounded ${
                     patient.status_ticket === 'waiting' 
-                      ? 'bg-yellow-100 text-yellow-800' 
+                      ? 'bg-yellow-100 text-yellow-800 w-full text-center' 
                       : patient.status_ticket === 'completed'
-                      ? 'bg-green-100 text-green-800'
+                      ? 'bg-green-100 text-green-800 w-full text-center'
                       : patient.status_ticket === 'examined'
-                      ? 'bg-blue-100 text-blue-800'
-                      : 'bg-gray-100 text-gray-800'
+                      ? 'bg-blue-100 text-blue-800 w-full text-center'
+                      : 'bg-gray-100 text-gray-800 w-full text-center'
                   }`}>
                     {patient.status_ticket}
                   </span>

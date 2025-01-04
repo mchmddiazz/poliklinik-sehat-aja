@@ -1,0 +1,23 @@
+datasource db {
+  provider = "mysql"
+  url      = "mysql://root:@localhost:3306/poliklinik_widyatama"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model pasien {
+  nomor_pendaftaran   String @id
+  diagnosa            String?
+  resep_obat          String?
+  last_update         DateTime?
+}
+
+// model resep {
+//   id                Int      @id @default(autoincrement())
+//   nomor_pendaftaran String
+//   resep_obat        String
+//   created_at        DateTime @default(now())
+// }
+ 

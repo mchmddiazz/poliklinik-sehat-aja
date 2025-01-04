@@ -2,12 +2,28 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import PatientTable from '@/components/Table/PatientTable';
+import Header from "@/components/AdminHeader/Header";
 
 const Dashboard: React.FC = () => {
   const [patients, setPatients] = useState([]);
   const [completedCount, setCompletedCount] = useState(0);
   const [pendingCount, setPendingCount] = useState(0);
+
+  const router = useRouter();
+    const handleLogout = async () => {
+      const response = await fetch('/api/logout', {
+        method: 'POST',
+      });
+  
+      const data = await response.json();
+      if (data.success) {
+        router.push('/login');
+      } else {
+        alert('Failed to logout.');
+      }
+    };
 
   const fetchData = () => {
     fetch('/api/patients?role=apoteker')
@@ -28,12 +44,14 @@ const Dashboard: React.FC = () => {
   }, []);
 
   return (
+    // <Header/>
     <div className="p-8 bg-gray-50 min-h-screen">
       {/* Header Section */}
       <div className="mb-8 flex flex-col items-center justify-center">
         <h1 className="text-3xl font-bold text-gray-800 text-center">Apoteker Dashboard</h1>
         <p className="mt-2 text-gray-600 text-center">Selamat datang di dashboard apoteker!</p>
         <p className="mt-1 text-sm text-gray-500">Data pasien hari ini</p>
+        <Link className="my-2" href="javascript:void(0);" onClick={handleLogout}>Logout</Link>
       </div>
 
       {/* Stats Cards */}

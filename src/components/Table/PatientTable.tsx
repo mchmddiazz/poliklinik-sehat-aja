@@ -1,5 +1,6 @@
 import React from 'react';
 import Swal from 'sweetalert2';
+import Link from 'next/link';
 
 interface Patient {
   nama: string;
@@ -39,8 +40,6 @@ const PatientTable: React.FC<PatientTableProps> = ({
       });
 
       const result = await response.json();
-
-      console.log(result)
 
       if (result.success) {
         Swal.fire({
@@ -108,6 +107,11 @@ const PatientTable: React.FC<PatientTableProps> = ({
                 </th>
               </>
             )}
+            {role === 'dokter' && (
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Action
+              </th>
+            )}
             {role === 'apoteker' && (
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Action
@@ -157,6 +161,17 @@ const PatientTable: React.FC<PatientTableProps> = ({
                   </span>
                 </div>
               </td>
+              {role === 'dokter' && (
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {patient.status_ticket === 'waiting' && (
+                    <Link href={`/dokter/dashboard/diagnosa/${patient.nomor_pendaftaran}`}>
+                      <span className='bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors'>
+                        Action
+                      </span>
+                    </Link>
+                  )}
+                </td>
+              )}
               {role === 'admin' && (
                 <>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

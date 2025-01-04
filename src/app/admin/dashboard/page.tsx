@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import Link from "next/link";
 import PatientTable from '@/components/Table/PatientTable';
 
 const Dashboard: React.FC = () => {
@@ -10,6 +11,20 @@ const Dashboard: React.FC = () => {
   const [waitingCount, setWaitingCount] = useState(0);
   const [examinedCount, setExaminedCount] = useState(0);
   const [completedCount, setCompletedCount] = useState(0);
+
+  const router = useRouter();
+  const handleLogout = async () => {
+    const response = await fetch('/api/logout', {
+      method: 'POST',
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      router.push('/login');
+    } else {
+      alert('Failed to logout.');
+    }
+  };
 
   useEffect(() => {
     // Fetch all patients data (not filtered by date)
@@ -24,6 +39,11 @@ const Dashboard: React.FC = () => {
             try {
               return {
                 ...patient,
+                tanggal_lahir: patient.tanggal_lahir ? new Date(patient.tanggal_lahir).toLocaleDateString('id-ID', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                }) : '-',
                 created_at: patient.created_at ? new Date(patient.created_at).toLocaleDateString('id-ID', {
                   day: '2-digit',
                   month: '2-digit',
@@ -64,6 +84,7 @@ const Dashboard: React.FC = () => {
         <h1 className="text-3xl font-bold text-gray-800 text-center">Admin Dashboard</h1>
         <p className="mt-2 text-gray-600 text-center">Selamat datang di dashboard admin!</p>
         <p className="mt-1 text-sm text-gray-500">Overview data keseluruhan sistem</p>
+        <Link className="my-2" href="javascript:void(0);" onClick={handleLogout}>Logout</Link>
       </div>
 
       {/* Stats Cards */}
@@ -124,7 +145,7 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+        {/* <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
           <Link href="/admin/dashboard/settings" className="flex items-center">
             <div className="p-3 bg-gray-100 rounded-full">
               <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -137,7 +158,7 @@ const Dashboard: React.FC = () => {
               <p className="text-gray-600">Pengaturan Sistem</p>
             </div>
           </Link>
-        </div>
+        </div> */}
       </div>
 
       {/* Patient Table */}

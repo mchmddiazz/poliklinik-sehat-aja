@@ -1,6 +1,7 @@
 // API route for login
 import { NextResponse } from 'next/server';
 import db from '@/lib/db';
+import { serialize } from 'cookie';
 
 export async function POST(req: Request) {
   try {
@@ -14,11 +15,26 @@ export async function POST(req: Request) {
 
     if (user) {
       if (['admin', 'dokter', 'apoteker'].includes(check_role['role'])) {
-        return NextResponse.json({
+        const token = `${check_role['role']}-${new Date().getTime()}`;
+
+        const response = NextResponse.json({
           success: true,
           role: check_role['role'],
           message: 'Login successful',
         });
+
+        response.headers.set(
+          'Set-Cookie',
+          serialize('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            path: '/',
+            maxAge: 60 * 60 * 24, // 1 day
+          })
+        );
+        return response;
+
       } else {
         return NextResponse.json({
           success: false,

@@ -30,11 +30,21 @@ const Dashboard: React.FC = () => {
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          setPatients(data.data);
+          // Format the date before setting the state
+          const formattedData = data.data.map((patient: any) => ({
+            ...patient,
+            tanggal_lahir: new Date(patient.tanggal_lahir).toLocaleDateString('id-ID', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric'
+            })
+          }));
+          
+          setPatients(formattedData);
           // Count completed and pending prescriptions
-          const completed = data.data.filter((p: any) => p.status_ticket === 'completed').length;
+          const completed = formattedData.filter((p: any) => p.status_ticket === 'completed').length;
           setCompletedCount(completed);
-          setPendingCount(data.data.length - completed);
+          setPendingCount(formattedData.length - completed);
         }
       });
   };

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import PatientTable from '@/components/Table/PatientTable';
 
 const Dashboard: React.FC = () => {
@@ -9,6 +10,21 @@ const Dashboard: React.FC = () => {
   const [examinedCount, setExaminedCount] = useState(0);
   const [waitingCount, setWaitingCount] = useState(0);
   const [completedCount, setCompletedCount] = useState(0);
+  
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    const response = await fetch('/api/logout', {
+      method: 'POST',
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      router.push('/login');
+    } else {
+      alert('Failed to logout.');
+    }
+  };
 
   useEffect(() => {
     // Fetch today's patients for doctor
@@ -16,11 +32,21 @@ const Dashboard: React.FC = () => {
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          setPatients(data.data); // Langsung set data tanpa formatting
+          // Format the date before setting the state
+          const formattedData = data.data.map((patient: any) => ({
+            ...patient,
+            tanggal_lahir: new Date(patient.tanggal_lahir).toLocaleDateString('id-ID', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric'
+            })
+          }));
+          
+          setPatients(formattedData);
           // Count patients by status
-          const examined = data.data.filter((p: any) => p.status_ticket === 'examined').length;
-          const waiting = data.data.filter((p: any) => p.status_ticket === 'waiting').length;
-          const completed = data.data.filter((p: any) => p.status_ticket === 'completed').length;
+          const examined = formattedData.filter((p: any) => p.status_ticket === 'examined').length;
+          const waiting = formattedData.filter((p: any) => p.status_ticket === 'waiting').length;
+          const completed = formattedData.filter((p: any) => p.status_ticket === 'completed').length;
           setExaminedCount(examined);
           setWaitingCount(waiting);
           setCompletedCount(completed);
@@ -35,6 +61,7 @@ const Dashboard: React.FC = () => {
         <h1 className="text-3xl font-bold text-gray-800 text-center">Dokter Dashboard</h1>
         <p className="mt-2 text-gray-600 text-center">Selamat datang di dashboard dokter!</p>
         <p className="mt-1 text-sm text-gray-500">Data pasien hari ini</p>
+        <Link className="my-2" href="javascript:void(0);" onClick={handleLogout}>Logout</Link>
       </div>
 
       {/* Stats Cards */}

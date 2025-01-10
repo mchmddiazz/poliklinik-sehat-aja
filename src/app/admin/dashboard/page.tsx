@@ -4,8 +4,11 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from "next/link";
 import PatientTable from '@/components/Table/PatientTable';
+<<<<<<< HEAD
 import EditPatientModal from '@/components/Modals/EditPatientModal';
 import Swal from 'sweetalert2';
+=======
+>>>>>>> 57ee6a0350cf43a9d0a85cbff48da8fdd63d60d7
 
 const Dashboard: React.FC = () => {
   const [patients, setPatients] = useState([]);
@@ -13,10 +16,13 @@ const Dashboard: React.FC = () => {
   const [waitingCount, setWaitingCount] = useState(0);
   const [examinedCount, setExaminedCount] = useState(0);
   const [completedCount, setCompletedCount] = useState(0);
+<<<<<<< HEAD
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
+=======
+>>>>>>> 57ee6a0350cf43a9d0a85cbff48da8fdd63d60d7
 
   const router = useRouter();
   const handleLogout = async () => {
@@ -83,6 +89,7 @@ const Dashboard: React.FC = () => {
       });
   }, []);
 
+<<<<<<< HEAD
   const handleEditClick = (patient: any) => {
     setSelectedPatient(patient);
     setIsEditModalOpen(true);
@@ -248,6 +255,8 @@ const Dashboard: React.FC = () => {
     setCurrentPage(pageNumber);
   };
 
+=======
+>>>>>>> 57ee6a0350cf43a9d0a85cbff48da8fdd63d60d7
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
       {/* Header Section */}
@@ -334,6 +343,7 @@ const Dashboard: React.FC = () => {
 
       {/* Patient Table */}
       <div className="bg-white rounded-lg shadow-md border border-gray-100">
+<<<<<<< HEAD
         <PatientTable 
           patients={currentPatients.map((patient, index) => ({
             ...patient,
@@ -409,6 +419,10 @@ const Dashboard: React.FC = () => {
           onUpdate={handleUpdatePatient}
         />
       )}
+=======
+        <PatientTable patients={patients} role="admin" />
+      </div>
+>>>>>>> 57ee6a0350cf43a9d0a85cbff48da8fdd63d60d7
     </div>
   );
 };

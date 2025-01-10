@@ -4,8 +4,6 @@ import Home from "../components/Home/Home";
 import Footer from "../components/Footer/Footer";
 import "./assets/custom.css";
 
-// sample deploy
-
 const HomePage = () => {
   return (
     <>

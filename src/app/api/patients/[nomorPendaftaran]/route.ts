@@ -5,10 +5,11 @@ import { db_conn } from '@/db/config';
 // Handler untuk PUT request (update)
 export async function PUT(
   request: Request,
-  { params }: { params: { nomorPendaftaran: string } }
+  context : { params: { nomorPendaftaran: string } }
 ) {
   let connection;
   try {
+    const params  = await context.params;
     const { nomorPendaftaran } = params;
     const {
       nama,

@@ -327,7 +327,7 @@ const PatientTable: React.FC<PatientTableProps> = ({
             }
           `}
         </style>
-      <div style={{ position: 'absolute', top: '-99999px' }}>
+      <div>
         <div ref={contentRef}>
           <div className='flex flex-wrap receipt-wrapper'>
             <div className='basis-full'>
@@ -338,12 +338,14 @@ const PatientTable: React.FC<PatientTableProps> = ({
                 <h1 className="text-3xl font-bold text-gray-800 text-left">Poliklinik Sehat Aja</h1>
                 <p className='mt-2 text-xs text-gray-600 text-left'>Bandung, Jawa Barat</p>
               </div>
-              <div className='patient-container'>
-                <p className='text-md mb-1 text-gray-600'><strong>Nama:</strong> {selectedPatient?.nama}</p>
-                <p className='text-md mb-1 text-gray-600'><strong>Usia:</strong> {selectedPatient?.usia} tahun</p>
-                <p className='text-md mb-1 text-gray-600'><strong>Jenis Kelamin:</strong> {selectedPatient?.jenis_kelamin}</p>
-                <p className='text-md mb-1 text-gray-600'><strong>Poliklinik:</strong> {selectedPatient?.poliklinik}</p>
-              </div>
+              {selectedPatient && (
+                <div className='patient-container'>
+                  <p className='text-md mb-1 text-gray-600'><strong>Nama:</strong> {selectedPatient?.nama}</p>
+                  <p className='text-md mb-1 text-gray-600'><strong>Usia:</strong> {selectedPatient?.usia} tahun</p>
+                  <p className='text-md mb-1 text-gray-600'><strong>Jenis Kelamin:</strong> {selectedPatient?.jenis_kelamin}</p>
+                  <p className='text-md mb-1 text-gray-600'><strong>Poliklinik:</strong> {selectedPatient?.poliklinik}</p>
+                </div>
+              )}
             </div>
             <div className='basis-3/6'>
             </div>

@@ -1,14 +1,8 @@
-<<<<<<< HEAD
 import React, { useState, useEffect, useRef } from 'react';
 import Swal from 'sweetalert2';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisV, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
-=======
-import React from 'react';
-import Swal from 'sweetalert2';
-import Link from 'next/link';
->>>>>>> 57ee6a0350cf43a9d0a85cbff48da8fdd63d60d7
 
 interface Patient {
   nama: string;
@@ -27,17 +21,13 @@ interface PatientTableProps {
   patients: any[];
   role?: string;
   showRegistrationNumber?: boolean;
-<<<<<<< HEAD
   onEdit?: (patient: any) => void;
   onDelete?: (ticketId: string) => void;
-=======
->>>>>>> 57ee6a0350cf43a9d0a85cbff48da8fdd63d60d7
 }
 
 const PatientTable: React.FC<PatientTableProps> = ({ 
   patients, 
   role,
-<<<<<<< HEAD
   showRegistrationNumber = true,
   onEdit,
   onDelete
@@ -66,10 +56,6 @@ const PatientTable: React.FC<PatientTableProps> = ({
     }
   };
 
-=======
-  showRegistrationNumber = true
-}) => {
->>>>>>> 57ee6a0350cf43a9d0a85cbff48da8fdd63d60d7
   const handleComplete = async (nomor_pendaftaran: string) => {
     try {
       const response = await fetch('/api/status_ticket', {
@@ -115,11 +101,7 @@ const PatientTable: React.FC<PatientTableProps> = ({
         <thead>
           <tr className="bg-gray-100">
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-<<<<<<< HEAD
               No.
-=======
-              {showRegistrationNumber ? 'No. Pendaftaran' : 'No'}
->>>>>>> 57ee6a0350cf43a9d0a85cbff48da8fdd63d60d7
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Nama
@@ -165,21 +147,14 @@ const PatientTable: React.FC<PatientTableProps> = ({
                 Action
               </th>
             )}
-<<<<<<< HEAD
             <th></th>
-=======
->>>>>>> 57ee6a0350cf43a9d0a85cbff48da8fdd63d60d7
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {patients.map((patient, index) => (
             <tr key={patient.id || index}>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-<<<<<<< HEAD
                 {index + 1}
-=======
-                {showRegistrationNumber ? patient.nomor_pendaftaran : index + 1}
->>>>>>> 57ee6a0350cf43a9d0a85cbff48da8fdd63d60d7
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 {patient.nama}
@@ -250,7 +225,6 @@ const PatientTable: React.FC<PatientTableProps> = ({
                   )}
                 </td>
               )}
-<<<<<<< HEAD
               {role === 'admin' && (
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 relative">
                 <button
@@ -288,8 +262,6 @@ const PatientTable: React.FC<PatientTableProps> = ({
                 )}
               </td>
               )}
-=======
->>>>>>> 57ee6a0350cf43a9d0a85cbff48da8fdd63d60d7
             </tr>
           ))}
         </tbody>

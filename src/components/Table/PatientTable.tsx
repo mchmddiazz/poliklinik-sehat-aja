@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Swal from 'sweetalert2';
 import Link from 'next/link';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEllipsisV, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 interface Patient {
   nama: string;
@@ -19,13 +21,41 @@ interface PatientTableProps {
   patients: any[];
   role?: string;
   showRegistrationNumber?: boolean;
+  onEdit?: (patient: any) => void;
+  onDelete?: (ticketId: string) => void;
 }
 
 const PatientTable: React.FC<PatientTableProps> = ({ 
   patients, 
   role,
-  showRegistrationNumber = true
+  showRegistrationNumber = true,
+  onEdit,
+  onDelete
 }) => {
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setActiveMenu(null);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const toggleMenu = (nomorPendaftaran: string) => {
+    if (activeMenu === nomorPendaftaran) {
+      setActiveMenu(null);
+    } else {
+      setActiveMenu(nomorPendaftaran);
+    }
+  };
+
   const handleComplete = async (nomor_pendaftaran: string) => {
     try {
       const response = await fetch('/api/status_ticket', {
@@ -71,7 +101,7 @@ const PatientTable: React.FC<PatientTableProps> = ({
         <thead>
           <tr className="bg-gray-100">
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              {showRegistrationNumber ? 'No. Pendaftaran' : 'No'}
+              No.
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Nama
@@ -117,13 +147,14 @@ const PatientTable: React.FC<PatientTableProps> = ({
                 Action
               </th>
             )}
+            <th></th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {patients.map((patient, index) => (
             <tr key={patient.id || index}>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {showRegistrationNumber ? patient.nomor_pendaftaran : index + 1}
+                {index + 1}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 {patient.nama}
@@ -193,6 +224,43 @@ const PatientTable: React.FC<PatientTableProps> = ({
                     </button>
                   )}
                 </td>
+              )}
+              {role === 'admin' && (
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 relative">
+                <button
+                  onClick={() => toggleMenu(patient.nomor_pendaftaran)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <FontAwesomeIcon icon={faEllipsisV} />
+                </button>
+                
+                {activeMenu === patient.nomor_pendaftaran && (
+                  <div ref={menuRef} className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                    <div className="py-1" role="menu">
+                      <button
+                        onClick={() => {
+                          onEdit(patient);
+                          setActiveMenu(null);
+                        }}
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full"
+                      >
+                        <FontAwesomeIcon icon={faPen} className="mr-3" />
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => {
+                          onDelete(patient.nomor_pendaftaran);
+                          setActiveMenu(null);
+                        }}
+                        className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full"
+                      >
+                        <FontAwesomeIcon icon={faTrash} className="mr-3" />
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </td>
               )}
             </tr>
           ))}

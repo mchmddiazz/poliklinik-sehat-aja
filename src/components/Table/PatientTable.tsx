@@ -3,6 +3,7 @@ import Swal from 'sweetalert2';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisV, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { useReactToPrint } from "react-to-print";
 
 interface Patient {
   nama: string;
@@ -12,6 +13,8 @@ interface Patient {
   poliklinik: string;
   kartu_berobat: string;
   nomor_pendaftaran: string;
+  diagnosa: string,
+  resep_obat: string,
   status_ticket: string;
   created_at: string;
   last_update: string;
@@ -34,6 +37,38 @@ const PatientTable: React.FC<PatientTableProps> = ({
 }) => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
+
+  const handlePrint = useReactToPrint({
+    contentRef,
+    documentTitle: 'Prescription'
+    // onAfterPrint: () => Swal.fire('Success', 'Prescription printed successfully!', 'success'),
+  });
+
+  const getCurrentTimestamp = () => {
+    const date = new Date();
+    
+    const day = String(date.getDate()).padStart(2, '0'); // Day with leading zero if needed
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Month with leading zero
+    const year = date.getFullYear();
+    
+    const hours = String(date.getHours()).padStart(2, '0'); // Hour with leading zero
+    const minutes = String(date.getMinutes()).padStart(2, '0'); // Minutes with leading zero
+  
+    return `${day}/${month}/${year} ${hours}:${minutes}`;
+  };
+
+  const handlePrintClick = (patient: Patient) => {
+    setSelectedPatient(patient);
+    console.log(patient);
+    if (contentRef.current) {
+      handlePrint();
+    } else {
+      console.error("contentRef is not ready");
+    }
+  };
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -214,16 +249,26 @@ const PatientTable: React.FC<PatientTableProps> = ({
                 </>
               )}
               {role === 'apoteker' && (
+                <>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {patient.status_ticket !== 'completed' && (
-                    <button
-                      onClick={() => handleComplete(patient.nomor_pendaftaran)}
+                    <div className='action-wrapper'>
+                      <button
+                      onClick={() => handlePrintClick(patient)}
                       className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
                     >
-                      Complete
+                      Print
                     </button>
+                    <button
+                        onClick={() => handleComplete(patient.nomor_pendaftaran)}
+                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                      >
+                        Complete
+                      </button>
+                    </div>
                   )}
                 </td>
+                </>
               )}
               {role === 'admin' && (
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 relative">
@@ -266,6 +311,75 @@ const PatientTable: React.FC<PatientTableProps> = ({
           ))}
         </tbody>
       </table>
+      {/* Hidden print content */}
+        <style jsx>
+          {`
+           @media print {
+              html, body {
+                height: 100vh; /* Use 100% here to support printing more than a single page*/
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden;
+              }
+              .receipt-wrapper {
+                padding: 2em;
+              }
+            }
+          `}
+        </style>
+      <div style={{ position: 'absolute', top: '-99999px' }}>
+        <div ref={contentRef}>
+          <div className='flex flex-wrap receipt-wrapper'>
+            <div className='basis-full'>
+              <p className='mt-1 text-xs text-gray-500 text-right'>Resep printed at {getCurrentTimestamp()}</p>
+            </div>
+            <div className='basis-3/6 mb-4'>
+              <div className='mb-6'>
+                <h1 className="text-3xl font-bold text-gray-800 text-left">Poliklinik Sehat Aja</h1>
+                <p className='mt-2 text-xs text-gray-600 text-left'>Bandung, Jawa Barat</p>
+              </div>
+              <div className='patient-container'>
+                <p className='text-md mb-1 text-gray-600'><strong>Nama:</strong> {selectedPatient?.nama}</p>
+                <p className='text-md mb-1 text-gray-600'><strong>Usia:</strong> {selectedPatient?.usia} tahun</p>
+                <p className='text-md mb-1 text-gray-600'><strong>Jenis Kelamin:</strong> {selectedPatient?.jenis_kelamin}</p>
+                <p className='text-md mb-1 text-gray-600'><strong>Poliklinik:</strong> {selectedPatient?.poliklinik}</p>
+              </div>
+            </div>
+            <div className='basis-3/6'>
+            </div>
+            <div className='basis-full'>
+              <table className='min-w-full bg-white'>
+                <thead>
+                  <tr className='bg-gray-100'>
+                    <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Diagnosis</th>
+                    <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Resep Obat</th>
+                  </tr>
+                </thead>
+                <tbody className='bg-white divide-y divide-gray-200'>
+                  {selectedPatient && (
+                    <tr>
+                      <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-500'>
+                        {selectedPatient.diagnosa}
+                      </td>
+                      <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-500'>
+                        {selectedPatient.resep_obat}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+              {/* {selectedPatient && (
+                <div>
+                  <p><strong>Patient:</strong> {selectedPatient.nama}</p>
+                  <p><strong>Diagnosis:</strong> {selectedPatient.diagnosa}</p>
+                  <p><strong>Prescription:</strong> {selectedPatient.resep_obat}</p>
+                  <p><strong>Date:</strong> {new Date().toLocaleDateString()}</p>
+                </div>
+              )} */}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

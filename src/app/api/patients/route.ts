@@ -15,7 +15,9 @@ export async function GET(req: Request) {
         usia, 
         poliklinik, 
         kartu_berobat, 
-        nomor_pendaftaran, 
+        nomor_pendaftaran,
+        diagnosa,
+        resep_obat, 
         status_ticket,
         created_at,
         last_update

@@ -21,6 +21,7 @@
     "prisma": "^6.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-to-print": "^3.0.4",
     "sweetalert2": "^11.15.10"
   },
   "devDependencies": {

@@ -327,7 +327,7 @@ const PatientTable: React.FC<PatientTableProps> = ({
             }
           `}
         </style>
-      <div>
+      <div style={{ position: 'absolute', top: '-99999px'}}>
         <div ref={contentRef}>
           <div className='flex flex-wrap receipt-wrapper'>
             <div className='basis-full'>

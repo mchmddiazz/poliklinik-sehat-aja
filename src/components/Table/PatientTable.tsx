@@ -13,11 +13,17 @@ interface Patient {
   poliklinik: string;
   kartu_berobat: string;
   nomor_pendaftaran: string;
-  diagnosa: string,
-  resep_obat: string,
+  diagnosa: string;
+  resep_obat: Obat[];
   status_ticket: string;
   created_at: string;
   last_update: string;
+}
+
+interface Obat {
+  resepObat: string;
+  banyakObat: number;
+  anjuranPakai: string;
 }
 
 interface PatientTableProps {
@@ -28,8 +34,8 @@ interface PatientTableProps {
   onDelete?: (ticketId: string) => void;
 }
 
-const PatientTable: React.FC<PatientTableProps> = ({ 
-  patients, 
+const PatientTable: React.FC<PatientTableProps> = ({
+  patients,
   role,
   showRegistrationNumber = true,
   onEdit,
@@ -37,7 +43,7 @@ const PatientTable: React.FC<PatientTableProps> = ({
 }) => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-  
+
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
 
@@ -49,25 +55,27 @@ const PatientTable: React.FC<PatientTableProps> = ({
 
   const getCurrentTimestamp = () => {
     const date = new Date();
-    
+
     const day = String(date.getDate()).padStart(2, '0'); // Day with leading zero if needed
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Month with leading zero
     const year = date.getFullYear();
-    
+
     const hours = String(date.getHours()).padStart(2, '0'); // Hour with leading zero
     const minutes = String(date.getMinutes()).padStart(2, '0'); // Minutes with leading zero
-  
+
     return `${day}/${month}/${year} ${hours}:${minutes}`;
   };
 
   const handlePrintClick = (patient: Patient) => {
     setSelectedPatient(patient);
     console.log(patient);
-    if (contentRef.current) {
-      handlePrint();
-    } else {
-      console.error("contentRef is not ready");
-    }
+    setTimeout(() => {
+      if (contentRef.current) {
+        handlePrint();
+      } else {
+        console.error("contentRef is not ready");
+      }
+    }, 100);
   };
 
   useEffect(() => {
@@ -214,15 +222,14 @@ const PatientTable: React.FC<PatientTableProps> = ({
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 <div className="flex justify-center">
-                  <span className={`px-2 py-1 rounded ${
-                    patient.status_ticket === 'waiting' 
-                      ? 'bg-yellow-100 text-yellow-800 w-full text-center' 
-                      : patient.status_ticket === 'completed'
+                  <span className={`px-2 py-1 rounded ${patient.status_ticket === 'waiting'
+                    ? 'bg-yellow-100 text-yellow-800 w-full text-center'
+                    : patient.status_ticket === 'completed'
                       ? 'bg-green-100 text-green-800 w-full text-center'
                       : patient.status_ticket === 'examined'
-                      ? 'bg-blue-100 text-blue-800 w-full text-center'
-                      : 'bg-gray-100 text-gray-800 w-full text-center'
-                  }`}>
+                        ? 'bg-blue-100 text-blue-800 w-full text-center'
+                        : 'bg-gray-100 text-gray-800 w-full text-center'
+                    }`}>
                     {patient.status_ticket}
                   </span>
                 </div>
@@ -250,70 +257,70 @@ const PatientTable: React.FC<PatientTableProps> = ({
               )}
               {role === 'apoteker' && (
                 <>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {patient.status_ticket !== 'completed' && (
-                    <div className='action-wrapper'>
-                      <button
-                      onClick={() => handlePrintClick(patient)}
-                      className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-                    >
-                      Print
-                    </button>
-                    <button
-                        onClick={() => handleComplete(patient.nomor_pendaftaran)}
-                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-                      >
-                        Complete
-                      </button>
-                    </div>
-                  )}
-                </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {patient.status_ticket !== 'completed' && (
+                      <div className='action-wrapper'>
+                        <button
+                          onClick={() => handlePrintClick(patient)}
+                          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                        >
+                          Print
+                        </button>
+                        <button
+                          onClick={() => handleComplete(patient.nomor_pendaftaran)}
+                          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                        >
+                          Complete
+                        </button>
+                      </div>
+                    )}
+                  </td>
                 </>
               )}
               {role === 'admin' && (
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 relative">
-                <button
-                  onClick={() => toggleMenu(patient.nomor_pendaftaran)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <FontAwesomeIcon icon={faEllipsisV} />
-                </button>
-                
-                {activeMenu === patient.nomor_pendaftaran && (
-                  <div ref={menuRef} className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
-                    <div className="py-1" role="menu">
-                      <button
-                        onClick={() => {
-                          onEdit(patient);
-                          setActiveMenu(null);
-                        }}
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full"
-                      >
-                        <FontAwesomeIcon icon={faPen} className="mr-3" />
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => {
-                          onDelete(patient.nomor_pendaftaran);
-                          setActiveMenu(null);
-                        }}
-                        className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full"
-                      >
-                        <FontAwesomeIcon icon={faTrash} className="mr-3" />
-                        Delete
-                      </button>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 relative">
+                  <button
+                    onClick={() => toggleMenu(patient.nomor_pendaftaran)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <FontAwesomeIcon icon={faEllipsisV} />
+                  </button>
+
+                  {activeMenu === patient.nomor_pendaftaran && (
+                    <div ref={menuRef} className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                      <div className="py-1" role="menu">
+                        <button
+                          onClick={() => {
+                            onEdit(patient);
+                            setActiveMenu(null);
+                          }}
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full"
+                        >
+                          <FontAwesomeIcon icon={faPen} className="mr-3" />
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => {
+                            onDelete(patient.nomor_pendaftaran);
+                            setActiveMenu(null);
+                          }}
+                          className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full"
+                        >
+                          <FontAwesomeIcon icon={faTrash} className="mr-3" />
+                          Delete
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </td>
+                  )}
+                </td>
               )}
             </tr>
           ))}
         </tbody>
       </table>
       {/* Hidden print content */}
-        <style jsx>
-          {`
+      <style jsx>
+        {`
            @media print {
               html, body {
                 height: 100vh; /* Use 100% here to support printing more than a single page*/
@@ -326,18 +333,60 @@ const PatientTable: React.FC<PatientTableProps> = ({
               }
             }
           `}
-        </style>
-      <div style={{ position: 'absolute', top: '-99999px'}}>
+      </style>
+      <div style={{
+        position: 'absolute',
+        top: '-9999px'
+      }}>
         <div ref={contentRef}>
           <div className='flex flex-wrap receipt-wrapper'>
             <div className='basis-full'>
               <p className='mt-1 text-xs text-gray-500 text-right'>Resep printed at {getCurrentTimestamp()}</p>
             </div>
-            <div className='basis-3/6 mb-4'>
-              <div className='mb-6'>
+            <div className='basis-full mb-4'>
+              <div className='m-auto'>
                 <h1 className="text-3xl font-bold text-gray-800 text-left">Poliklinik Sehat Aja</h1>
                 <p className='mt-2 text-xs text-gray-600 text-left'>Bandung, Jawa Barat</p>
               </div>
+            </div>
+            <div className='basis-full'>
+              <hr className='w-full h-1 mx-auto my-4 bg-gray-100 border-0 rounded md:my-10 dark:bg-gray-700' />
+
+              <div className='block'>
+                <h1 className="text-3xl font-bold text-gray-800 text-center my-4">Resep Digital</h1>
+                {selectedPatient?.resep_obat && (
+                  <ul>
+                    {(() => {
+                      let resepObatArray = [];
+                      try {
+                        // Parse the stringified JSON
+                        resepObatArray = JSON.parse(selectedPatient.resep_obat);
+                      } catch (e) {
+                        console.error("Failed to parse resep_obat:", e);
+                      }
+
+                      // Loop through the parsed array
+                      return resepObatArray.map((obat, index) => (
+                        <li key={index} className="mb-2">
+                          <div className='flex'>
+                            <div className='basis-3/6'>
+                              <strong>R/{obat.resepObat}</strong>
+                              <p className='mt-1 text-xs text-gray-500 text-left'>{obat.anjuranPakai}</p>
+                              <p className='mt-1 text-xs text-gray-500 text-left'>{obat.keterangan}</p>
+                            </div>
+                            <div className='basis-3/6'>
+                              <strong>{obat.banyakObat}</strong>
+                            </div>
+                          </div>
+                        </li>
+                      ));
+                    })()}
+                  </ul>
+                )}
+              </div>
+
+              <hr className='w-full h-1 mx-auto my-4 bg-gray-100 border-0 rounded md:my-10 dark:bg-gray-700' />
+
               {selectedPatient && (
                 <div className='patient-container'>
                   <p className='text-md mb-1 text-gray-600'><strong>Nama:</strong> {selectedPatient?.nama}</p>
@@ -346,38 +395,7 @@ const PatientTable: React.FC<PatientTableProps> = ({
                   <p className='text-md mb-1 text-gray-600'><strong>Poliklinik:</strong> {selectedPatient?.poliklinik}</p>
                 </div>
               )}
-            </div>
-            <div className='basis-3/6'>
-            </div>
-            <div className='basis-full'>
-              <table className='min-w-full bg-white'>
-                <thead>
-                  <tr className='bg-gray-100'>
-                    <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Diagnosis</th>
-                    <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Resep Obat</th>
-                  </tr>
-                </thead>
-                <tbody className='bg-white divide-y divide-gray-200'>
-                  {selectedPatient && (
-                    <tr>
-                      <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-500'>
-                        {selectedPatient.diagnosa}
-                      </td>
-                      <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-500'>
-                        {selectedPatient.resep_obat}
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-              {/* {selectedPatient && (
-                <div>
-                  <p><strong>Patient:</strong> {selectedPatient.nama}</p>
-                  <p><strong>Diagnosis:</strong> {selectedPatient.diagnosa}</p>
-                  <p><strong>Prescription:</strong> {selectedPatient.resep_obat}</p>
-                  <p><strong>Date:</strong> {new Date().toLocaleDateString()}</p>
-                </div>
-              )} */}
+
             </div>
           </div>
         </div>

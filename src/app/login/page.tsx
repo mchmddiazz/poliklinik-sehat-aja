@@ -30,6 +30,9 @@ export default function Login() {
           case 'apoteker':
             router.push('/apoteker/dashboard');
             break;
+          case 'administrasi':
+            router.push('/administrasi/dashboard');
+            break;
           default:
             alert('Username or password is invalid, please check again')
         }

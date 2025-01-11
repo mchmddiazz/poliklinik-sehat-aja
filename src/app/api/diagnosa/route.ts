@@ -3,17 +3,20 @@ import db from '@/lib/db';
 
 export async function POST(req: NextRequest) {
   try {
-    const { ticket_id, diagnosa, resep_obat } = await req.json();
+    const { ticket_id, diagnosa, obatList } = await req.json();
 
-    if (!ticket_id || !diagnosa || !resep_obat) {
+    if (!ticket_id || !diagnosa || !Array.isArray(obatList) || obatList.length === 0) {
       return NextResponse.json(
         {
           success: false,
-          message: 'Missing ticket ID, diagnosis, or prescription',
+          message: 'Missing ticket ID, diagnosis, or prescription list',
         },
         { status: 400 }
       );
     }
+
+    // Convert obatList into JSON string to store in the database
+    const resep_obat = JSON.stringify(obatList);
 
     // MySQL query to update the pasien table
     const query = `
@@ -25,7 +28,6 @@ export async function POST(req: NextRequest) {
 
     // Execute the query
     const [result] = await db.query(query, values);
-    
 
     if (result.affectedRows === 0) {
       return NextResponse.json(

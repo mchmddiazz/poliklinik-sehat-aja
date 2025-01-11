@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     const check_role = user[0]
 
     if (user) {
-      if (['admin', 'dokter', 'apoteker'].includes(check_role['role'])) {
+      if (['admin', 'dokter', 'apoteker', 'administrasi'].includes(check_role['role'])) {
         const token = `${check_role['role']}-${new Date().getTime()}`;
 
         const response = NextResponse.json({

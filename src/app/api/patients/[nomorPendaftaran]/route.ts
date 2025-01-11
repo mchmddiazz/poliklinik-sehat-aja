@@ -59,10 +59,11 @@ export async function PUT(
 // Handler untuk DELETE request
 export async function DELETE(
   request: Request,
-  { params }: { params: { nomorPendaftaran: string } }
+  context: { params: { nomorPendaftaran: string } }
 ) {
   let connection;
   try {
+    const params  = await context.params;
     const { nomorPendaftaran } = params;
     
     connection = await mysql.createConnection(db_conn);

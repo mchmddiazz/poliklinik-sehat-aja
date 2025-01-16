@@ -8,8 +8,8 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["../src/*"],
-      "@/lib/*": ["../src/lib/*"]
+      "@/*": ["./src/*"],
+      "@/lib/*": ["./src/lib/*"]
     }
   },
   "ts-node": {

@@ -13,10 +13,11 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value
   const path = request.nextUrl.pathname
 
+  // Public routes that don't require authentication
+  if (path == '/' || path == '/register') return;
+
   // Allow access to login page and API routes
-  if (path === '/login' || path.startsWith('/api')) {
-    return NextResponse.next()
-  }
+  if (path === '/login' || path.startsWith('/api')) return NextResponse.next();
 
   // If no token, redirect to login
   if (!token) {

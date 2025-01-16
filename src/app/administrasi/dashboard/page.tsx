@@ -7,8 +7,19 @@ import PatientTable from '@/components/Table/PatientTable';
 import EditPatientModal from '@/components/Modals/EditPatientModal';
 import Swal from 'sweetalert2';
 
+interface Patient {
+  nomor_pendaftaran: string;
+  nama: string;
+  tanggal_lahir: string;
+  created_at: string;
+  last_update: string;
+  status_ticket: string;
+  // tambahkan properti lain yang dibutuhkan
+  [key: string]: any; // untuk properti dinamis lainnya
+}
+
 const Dashboard: React.FC = () => {
-  const [patients, setPatients] = useState([]);
+  const [patients, setPatients] = useState<Patient[]>([]);
   const [totalPatients, setTotalPatients] = useState(0);
   const [waitingCount, setWaitingCount] = useState(0);
   const [examinedCount, setExaminedCount] = useState(0);
@@ -31,6 +42,25 @@ const Dashboard: React.FC = () => {
       alert('Failed to logout.');
     }
   };
+
+  useEffect(() => {
+    // Cek token saat komponen dimount
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/check-auth');
+        const data = await response.json();
+        
+        if (!data.success || data.role !== 'administrasi') {
+          router.push('/login');
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        router.push('/login');
+      }
+    };
+
+    checkAuth();
+  }, []);
 
   useEffect(() => {
     // Fetch all patients data (not filtered by date)
@@ -320,9 +350,8 @@ const Dashboard: React.FC = () => {
       {/* Patient Table */}
       <div className="bg-white rounded-lg shadow-md border border-gray-100">
         <PatientTable 
-          patients={currentPatients.map((patient, index) => ({
+          patients={currentPatients.map((patient: Patient, index) => ({
             ...patient,
-            // Menambahkan nomor urut berdasarkan halaman saat ini
             nomor_urut: indexOfFirstItem + index + 1
           }))}
           role="admin" 

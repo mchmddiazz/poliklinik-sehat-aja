@@ -23,9 +23,7 @@ const Register = () => {
     poliklinik: "",
     tanggal_lahir: "",
   });
-
-  const [message, setMessage] = useState('');
-
+  
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({
@@ -49,8 +47,16 @@ const Register = () => {
 
       if (!response.ok) {
         // Handle non-2xx responses
-        const errorResponse = await response.text();  // Capture the raw response text
-        setMessage(`Error: ${errorResponse}`);
+        const errorResponse = await response.text();
+        const parseResponse = JSON.parse(errorResponse);
+
+        if (parseResponse.status == 400) {
+          Swal.fire({
+            icon: "warning",
+            title: "Error",
+            text: parseResponse.message || "There was an error while registering.",
+          })
+        }
         return;
       }
 
@@ -192,7 +198,7 @@ const Register = () => {
             </form>
 
             {/* Message after submission */}
-            {message && <p className="text-center mt-4 text-sm">{message}</p>}
+            {/* {message && <p className="text-center mt-4 text-sm">{message}</p>} */}
           </div>
         </div>
         <div className="footer-container">

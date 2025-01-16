@@ -5,7 +5,12 @@
     "target": "ESNext",
     "esModuleInterop": true,
     "allowJs": true,
-    "strict": true
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@/lib/*": ["./src/lib/*"]
+    }
   },
   "ts-node": {
     "esm": true,

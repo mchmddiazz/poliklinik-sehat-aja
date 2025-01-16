@@ -4,12 +4,15 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import PatientTable from '@/components/Table/PatientTable';
+import DiagnosaModal from '@/components/Modals/DiagnosaModal';
 
 const Dashboard: React.FC = () => {
   const [patients, setPatients] = useState([]);
   const [examinedCount, setExaminedCount] = useState(0);
   const [waitingCount, setWaitingCount] = useState(0);
   const [completedCount, setCompletedCount] = useState(0);
+  const [isDiagnosaModalOpen, setIsDiagnosaModalOpen] = useState(false);
+  const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
   
   const router = useRouter();
 
@@ -24,6 +27,11 @@ const Dashboard: React.FC = () => {
     } else {
       alert('Failed to logout.');
     }
+  };
+
+  const handleDiagnosisClick = (ticketId: string) => {
+    setSelectedTicketId(ticketId);
+    setIsDiagnosaModalOpen(true);
   };
 
   useEffect(() => {
@@ -129,8 +137,18 @@ const Dashboard: React.FC = () => {
           patients={patients} 
           role="dokter" 
           showRegistrationNumber={false}
+          onDiagnosis={handleDiagnosisClick}
         />
       </div>
+
+      {/* Diagnosa Modal */}
+      {isDiagnosaModalOpen && selectedTicketId && (
+        <DiagnosaModal
+          isOpen={isDiagnosaModalOpen}
+          onClose={() => setIsDiagnosaModalOpen(false)}
+          ticketId={selectedTicketId}
+        />
+      )}
     </div>
   );
 };

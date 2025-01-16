@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import PatientTable from '@/components/Table/PatientTable';
 import Header from "@/components/AdminHeader/Header";
+import Swal from 'sweetalert2';
 
 const Dashboard: React.FC = () => {
   const [patients, setPatients] = useState([]);
@@ -52,6 +53,61 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const handleComplete = async (ticketId: string) => {
+    try {
+      // Tampilkan konfirmasi terlebih dahulu
+      const result = await Swal.fire({
+        title: 'Konfirmasi',
+        text: 'Apakah Anda yakin ingin menyelesaikan resep ini?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, Selesaikan!',
+        cancelButtonText: 'Batal'
+      });
+
+      // Jika user klik confirm
+      if (result.isConfirmed) {
+        // Tampilkan loading
+        Swal.fire({
+          title: 'Memproses...',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
+        const response = await fetch(`/api/tickets/${ticketId}/complete`, {
+          method: 'PUT',
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          await Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: 'Status resep berhasil diperbarui',
+            timer: 1500,
+            showConfirmButton: false
+          });
+          // Refresh data atau update state
+          // ...
+        } else {
+          throw new Error(data.message || 'Terjadi kesalahan saat memperbarui status');
+        }
+      }
+    } catch (error) {
+      console.error('Error completing ticket:', error);
+      await Swal.fire({
+        icon: 'error',
+        title: 'Terjadi Kesalahan',
+        text: error instanceof Error ? error.message : 'Terjadi kesalahan saat memperbarui status',
+      });
+    }
+  };
 
   return (
     // <Headerr/>
@@ -115,6 +171,7 @@ const Dashboard: React.FC = () => {
           patients={patients} 
           role="apoteker" 
           showRegistrationNumber={false}
+          onComplete={handleComplete}
         />
       </div>
     </div>

@@ -3,10 +3,19 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Swal from 'sweetalert2';
 
+interface ObatItem {
+  resepObat: string;
+  banyakObat: string;
+  anjuranPakai: string;
+  keterangan: string;
+}
+
 export default function DiagnosaPage() {
   const { ticket_id } = useParams<{ ticket_id: string }>();
   const [diagnosa, setDiagnosa] = useState('');
-  const [obatList, setObatList] = useState([{ resepObat: '', banyakObat: '', anjuranPakai: '', keterangan: '' }]);
+  const [obatList, setObatList] = useState<ObatItem[]>([
+    { resepObat: '', banyakObat: '', anjuranPakai: '', keterangan: '' }
+  ]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,7 +36,7 @@ export default function DiagnosaPage() {
     setObatList(updatedObatList);
   };
 
-  const handleObatChange = (index: number, field: string, value: string) => {
+  const handleObatChange = (index: number, field: keyof ObatItem, value: string) => {
     const updatedObatList = [...obatList];
     updatedObatList[index][field] = value;
     setObatList(updatedObatList);
@@ -36,14 +45,11 @@ export default function DiagnosaPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!ticket_id || !diagnosa || obatList.some(obat => !obat.resepObat)) {
-      Swal.fire('Error', 'All fields are required', 'error');
-      return;
-    }
-
-    console.log(JSON.stringify({ ticket_id, diagnosa, obatList }))
-
     try {
+      if (!ticket_id || !diagnosa || obatList.some(obat => !obat.resepObat)) {
+        throw new Error('Semua field harus diisi');
+      }
+
       const response = await fetch('/api/diagnosa', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -52,15 +58,16 @@ export default function DiagnosaPage() {
 
       const result = await response.json();
 
-      if (response.ok && result.success) {
-        Swal.fire('Success', 'Diagnosis submitted successfully', 'success').then(function () {
-          window.location.href = '/dokter/dashboard';
-        });
-      } else {
-        Swal.fire('Error', result.message || 'Failed to submit diagnosis', 'error');
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to submit diagnosis');
       }
+
+      await Swal.fire('Success', 'Diagnosis submitted successfully', 'success');
+      window.location.href = '/dokter/dashboard';
+
     } catch (error: any) {
-      Swal.fire('Error', 'Failed to connect to server', 'error');
+      console.error('Error submitting diagnosis:', error);
+      Swal.fire('Error', error.message || 'Failed to connect to server', 'error');
     }
   };
 

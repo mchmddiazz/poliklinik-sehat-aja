@@ -20,4 +20,23 @@ model pasien {
 //   resep_obat        String
 //   created_at        DateTime @default(now())
 // }
+
+model Diagnosis {
+  id        String   @id @default(cuid())
+  ticketId  String
+  diagnosis String
+  medicines Medicine[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Medicine {
+  id           String    @id @default(cuid())
+  diagnosisId  String
+  diagnosis    Diagnosis @relation(fields: [diagnosisId], references: [id])
+  obat         String
+  banyaknya    String
+  anjuranPakai String
+  keterangan   String?
+}
  

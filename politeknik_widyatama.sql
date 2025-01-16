@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 10, 2025 at 07:18 PM
+-- Generation Time: Jan 16, 2025 at 04:52 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -28,13 +28,12 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `pasien` (
-  `id` int(11) NOT NULL,
+  `kartu_berobat` bigint(20) NOT NULL,
   `nama` varchar(255) NOT NULL,
   `jenis_kelamin` text NOT NULL,
   `tanggal_lahir` date NOT NULL,
   `usia` int(10) NOT NULL,
   `poliklinik` varchar(50) NOT NULL,
-  `kartu_berobat` varchar(255) DEFAULT NULL,
   `nomor_pendaftaran` varchar(255) DEFAULT NULL,
   `diagnosa` varchar(255) DEFAULT NULL,
   `resep_obat` varchar(255) NOT NULL,
@@ -47,18 +46,53 @@ CREATE TABLE `pasien` (
 -- Dumping data for table `pasien`
 --
 
-INSERT INTO `pasien` (`id`, `nama`, `jenis_kelamin`, `tanggal_lahir`, `usia`, `poliklinik`, `kartu_berobat`, `nomor_pendaftaran`, `diagnosa`, `resep_obat`, `status_ticket`, `created_at`, `last_update`) VALUES
-(15, 'diaz', 'Laki-laki', '2000-12-01', 24, 'Umum', 'PSA-9772-040755', 'A-2484-040776', '', '', 'waiting', '2024-12-31 21:24:00', '2024-12-31 21:24:00'),
-(18, 'tes data', 'Laki-laki', '1111-11-11', 1, 'Umum', 'PSA-8187-263046', 'A-6273-263071', '', '', 'waiting', '2024-12-31 22:01:03', '2024-12-31 22:01:03'),
-(19, 'diaz', 'Laki-laki', '1111-11-11', 1, 'Umum', 'PSA-7283-621215', 'A-9573-621226', '', '', 'waiting', '2025-01-01 13:23:41', '2025-01-01 13:23:41'),
-(20, 'tesa', 'Perempuan', '1999-01-21', 23, 'Umum', 'PSA-4607-740788', 'A-4675-740820', '', '', 'waiting', '2025-01-01 17:19:00', '2025-01-01 17:19:00'),
-(21, 'diaz', 'Laki-laki', '1111-11-11', 1, 'Umum', 'PSA-9907-864694', 'A-8978-864714', '', '', 'waiting', '2025-01-01 19:34:24', '2025-01-01 19:34:24'),
-(22, 'tess', 'Laki-laki', '1111-11-11', 24, 'Bidan', 'PSA-4064-526261', 'A-7162-526311', '', '', 'waiting', '2025-01-02 10:28:46', '2025-01-02 10:28:46'),
-(23, 'diazz tess', 'Laki-laki', '0111-11-11', 1, 'Umum', 'PSA-6371-610281', 'A-3064-610390', '', '', 'waiting', '2025-01-02 11:53:30', '2025-01-02 11:53:30'),
-(24, 'diaz', 'Laki-laki', '1111-11-11', 1, 'Anak', 'PSA-3862-665766', 'A-6272-665785', '', '', 'waiting', '2025-01-02 18:51:05', '2025-01-02 18:51:05'),
-(25, 'tes', 'Laki-laki', '1111-11-11', 1, 'Umum', 'PSA-1865-724910', 'A-9765-724930', 'tes', 'tes', 'examined', '2025-01-08 20:58:44', '2025-01-08 21:08:35'),
-(26, 'testing data', 'Laki-laki', '2012-12-12', 1, 'Umum', 'PSA-3900-628519', 'A-8572-628529', 'testing', 'tesss', 'examined', '2025-01-10 18:13:48', '2025-01-10 19:15:17'),
-(27, 'tes', 'Perempuan', '0111-11-11', 1, 'Anak', 'PSA-5249-498532', 'A-4254-498568', 'testing', 'obat tes', 'examined', '2025-01-11 00:18:18', '2025-01-11 00:19:35');
+INSERT INTO `pasien` (`kartu_berobat`, `nama`, `jenis_kelamin`, `tanggal_lahir`, `usia`, `poliklinik`, `nomor_pendaftaran`, `diagnosa`, `resep_obat`, `status_ticket`, `created_at`, `last_update`) VALUES
+(16885360611, 'diaz', 'Laki-laki', '2000-12-01', 24, 'Umum', '11294360616', 'tes', '[{\"resepObat\":\"tes\",\"banyakObat\":\"tes\",\"anjuranPakai\":\"test\",\"keterangan\":\"tess\"}]', 'examined', '2025-01-15 14:32:40', '2025-01-15 23:31:20');
+
+--
+-- Triggers `pasien`
+--
+DELIMITER $$
+CREATE TRIGGER `after_pasien_delete` AFTER DELETE ON `pasien` FOR EACH ROW BEGIN
+    DELETE FROM pasien_register
+    WHERE kartu_berobat = OLD.kartu_berobat;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `after_pasien_insert` AFTER INSERT ON `pasien` FOR EACH ROW BEGIN
+    INSERT INTO pasien_register (kartu_berobat, created_at)
+    VALUES (NEW.kartu_berobat, CURDATE());
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `after_pasien_update` AFTER UPDATE ON `pasien` FOR EACH ROW BEGIN
+    UPDATE pasien_register
+    SET kartu_berobat = NEW.kartu_berobat
+    WHERE kartu_berobat = OLD.kartu_berobat;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pasien_register`
+--
+
+CREATE TABLE `pasien_register` (
+  `id` int(1) NOT NULL,
+  `kartu_berobat` bigint(20) DEFAULT NULL,
+  `created_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `pasien_register`
+--
+
+INSERT INTO `pasien_register` (`id`, `kartu_berobat`, `created_at`) VALUES
+(3, 16885360611, '2025-01-15 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -80,9 +114,9 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`id`, `username`, `password`, `role`, `created_at`, `last_login`) VALUES
-(1, 'tes', 'tess', 'admin', '2025-01-02 13:20:46', '2025-01-02 13:20:46'),
-(2, 'dokter', 'dokter', 'dokter', '2025-01-08 14:57:47', '2025-01-08 14:57:47'),
-(3, 'obat', 'obat', 'apoteker', '2025-01-08 14:57:47', '2025-01-08 14:57:47');
+(1, 'tes', '$2b$10$Ryphon/MTKRhGP1dw3lHvub/KQieE64DGE1hn4yJEWLeKBj0NAOqG', 'admin', '2025-01-02 13:20:46', '2025-01-02 13:20:46'),
+(2, 'dokter', '$2b$10$D.0TEcn/oFXO824VetL3y.GEQQMHA6faGVxTMcpR6Ht1vRUdgC7EK', 'dokter', '2025-01-08 14:57:47', '2025-01-08 14:57:47'),
+(3, 'obat', '$2b$10$SENM36LfkPc/iarmFNrLI.E7xmIP/iXA5zG1IyA.9hA6n39QuHIfu', 'apoteker', '2025-01-08 14:57:47', '2025-01-08 14:57:47');
 
 --
 -- Indexes for dumped tables
@@ -92,11 +126,14 @@ INSERT INTO `user` (`id`, `username`, `password`, `role`, `created_at`, `last_lo
 -- Indexes for table `pasien`
 --
 ALTER TABLE `pasien`
+  ADD PRIMARY KEY (`kartu_berobat`);
+
+--
+-- Indexes for table `pasien_register`
+--
+ALTER TABLE `pasien_register`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `kartu_berobat` (`kartu_berobat`),
-  ADD UNIQUE KEY `nomor_pendaftaran` (`nomor_pendaftaran`),
-  ADD KEY `kartu_berobat_2` (`kartu_berobat`,`nomor_pendaftaran`,`diagnosa`),
-  ADD KEY `kartu_berobat_3` (`kartu_berobat`);
+  ADD KEY `fk_kartu_berobat` (`kartu_berobat`);
 
 --
 -- Indexes for table `user`
@@ -109,16 +146,26 @@ ALTER TABLE `user`
 --
 
 --
--- AUTO_INCREMENT for table `pasien`
+-- AUTO_INCREMENT for table `pasien_register`
 --
-ALTER TABLE `pasien`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+ALTER TABLE `pasien_register`
+  MODIFY `id` int(1) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `pasien_register`
+--
+ALTER TABLE `pasien_register`
+  ADD CONSTRAINT `fk_kartu_berobat` FOREIGN KEY (`kartu_berobat`) REFERENCES `pasien` (`kartu_berobat`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -25,6 +25,7 @@ interface Obat {
   resepObat: string;
   banyakObat: number;
   anjuranPakai: string;
+  harga: string;
 }
 
 interface PatientTableProps {
@@ -67,6 +68,16 @@ const PatientTable: React.FC<PatientTableProps> = ({
     documentTitle: 'Prescription'
     // onAfterPrint: () => Swal.fire('Success', 'Prescription printed successfully!', 'success'),
   });
+
+  const formatRupiah = (angka: string) => {
+    const number = parseInt(angka || '0', 10);
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(number);
+  };
 
   const getCurrentTimestamp = () => {
     const date = new Date();
@@ -286,7 +297,7 @@ const PatientTable: React.FC<PatientTableProps> = ({
                   </div>
                 </td>
                 {role === 'dokter' && (
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 relative text-center">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
                     {patient.status_ticket === 'waiting' && (
                       <>
                         <button
@@ -297,7 +308,10 @@ const PatientTable: React.FC<PatientTableProps> = ({
                         </button>
 
                         {activeMenu === patient.nomor_pendaftaran && (
-                          <div ref={menuRef} className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                          <div
+                            ref={menuRef}
+                            className="absolute right-8 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50"
+                          >
                             <div className="py-1" role="menu">
                               <button
                                 onClick={() => {
@@ -327,7 +341,7 @@ const PatientTable: React.FC<PatientTableProps> = ({
                   </>
                 )}
                 {role === 'apoteker' && (
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 relative text-center">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
                     {patient.status_ticket === 'invoiced' && (
                       <>
                         <button
@@ -338,7 +352,7 @@ const PatientTable: React.FC<PatientTableProps> = ({
                         </button>
 
                         {activeMenu === patient.nomor_pendaftaran && (
-                          <div ref={menuRef} className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                          <div ref={menuRef} className="absolute right-8 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
                             <div className="py-1" role="menu">
                               <button
                                 onClick={() => {
@@ -368,7 +382,7 @@ const PatientTable: React.FC<PatientTableProps> = ({
                   </td>
                 )}
                 {role === 'administrasi' && (
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 relative text-center">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
                     {patient.status_ticket === 'examined' && (
                       <>
                         <button
@@ -379,7 +393,7 @@ const PatientTable: React.FC<PatientTableProps> = ({
                         </button>
 
                         {activeMenu === patient.nomor_pendaftaran && (
-                          <div ref={menuRef} className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                          <div ref={menuRef} className="absolute right-8 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
                             <div className="py-1" role="menu">
                               <button
                                 onClick={() => {
@@ -399,7 +413,7 @@ const PatientTable: React.FC<PatientTableProps> = ({
                   </td>
                 )}
                 {role === 'admin' && (
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 relative text-center">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                     <button
                       onClick={() => toggleMenu(patient.nomor_pendaftaran)}
                       className="text-gray-400 hover:text-gray-600 inline-flex items-center justify-center"
@@ -408,7 +422,7 @@ const PatientTable: React.FC<PatientTableProps> = ({
                     </button>
 
                     {activeMenu === patient.nomor_pendaftaran && (
-                      <div ref={menuRef} className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                      <div ref={menuRef} className="absolute right-8 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
                         <div className="py-1" role="menu">
                           <button
                             onClick={() => {
@@ -515,7 +529,7 @@ const PatientTable: React.FC<PatientTableProps> = ({
                   <p className='text-md mb-1 text-gray-600'><strong>Usia:</strong> {selectedPatient?.usia} tahun</p>
                   <p className='text-md mb-1 text-gray-600'><strong>Jenis Kelamin:</strong> {selectedPatient?.jenis_kelamin}</p>
                   <p className='text-md mb-1 text-gray-600'><strong>Poliklinik:</strong> {selectedPatient?.poliklinik}</p>
-                  <p className='text-md mb-1 text-gray-600'><strong>Harga:</strong> {selectedPatient?.harga}</p>
+                  <p className='text-md mb-1 text-gray-600'><strong>Total Biaya:</strong> {formatRupiah(selectedPatient?.harga)}</p>
                 </div>
               )}
 

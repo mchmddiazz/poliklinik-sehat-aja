@@ -20,7 +20,8 @@ export async function GET(req: Request) {
         resep_obat, 
         status_ticket,
         created_at,
-        last_update
+        last_update,
+        harga
       FROM pasien 
     `;
     

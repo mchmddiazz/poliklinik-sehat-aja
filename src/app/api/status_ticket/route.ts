@@ -56,7 +56,7 @@ export async function PUT(req: Request) {
     }
 
     // Validate status_ticket value
-    const validStatuses = ['waiting', 'examined', 'completed'];
+    const validStatuses = ['waiting', 'examined', 'invoiced', 'completed'];
     if (!validStatuses.includes(status_ticket)) {
       return NextResponse.json(
         {

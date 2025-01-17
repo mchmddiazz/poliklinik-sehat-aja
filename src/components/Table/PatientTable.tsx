@@ -46,6 +46,16 @@ const PatientTable: React.FC<PatientTableProps> = ({
   onDiagnosis,
   onAddInvoice
 }) => {
+  console.log('PatientTable rendered with:', {
+    role,
+    patientCount: patients.length,
+    patients: patients.map(p => ({
+      nomor_pendaftaran: p.nomor_pendaftaran,
+      status_ticket: p.status_ticket,
+      nama: p.nama
+    }))
+  });
+
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 

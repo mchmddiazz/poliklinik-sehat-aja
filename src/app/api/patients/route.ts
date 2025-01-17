@@ -33,7 +33,7 @@ export async function GET(req: Request) {
 
     // Additional filter based on role
     if (role === 'apoteker') {
-      query += " AND status_ticket = 'examined'";
+      query += " AND status_ticket = 'examined' OR status_ticket = 'invoiced'";
     } else if (role === 'dokter') {
       query += " AND (status_ticket = 'waiting' OR status_ticket = 'examined' OR status_ticket = 'completed')";
     }

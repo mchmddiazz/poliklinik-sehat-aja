@@ -138,8 +138,45 @@ const Dashboard: React.FC = () => {
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          // Your existing data processing logic
-          setPatients(data.data);
+          // Filter patients with status 'examined' first
+          const examinedPatients = data.data.filter((p: any) => p.status_ticket === 'examined');
+          
+          const patientsWithFormattedDates = examinedPatients.map((patient: any) => {
+            try {
+              return {
+                ...patient,
+                tanggal_lahir: patient.tanggal_lahir ? new Date(patient.tanggal_lahir).toLocaleDateString('id-ID', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                }) : '-',
+                created_at: patient.created_at ? new Date(patient.created_at).toLocaleDateString('id-ID', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                }) : '-',
+                last_update: patient.last_update ? new Date(patient.last_update).toLocaleDateString('id-ID', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                }) : '-'
+              };
+            } catch (error) {
+              console.error('Error formatting patient dates:', error, patient);
+              return patient;
+            }
+          });
+
+          setPatients(patientsWithFormattedDates);
+          
+          // Update counts based on all patients
+          setTotalPatients(data.data.length);
+          const waiting = data.data.filter((p: any) => p.status_ticket === 'waiting').length;
+          const examined = data.data.filter((p: any) => p.status_ticket === 'examined').length;
+          const completed = data.data.filter((p: any) => p.status_ticket === 'completed').length;
+          setWaitingCount(waiting);
+          setExaminedCount(examined);
+          setCompletedCount(completed);
         }
       });
   };

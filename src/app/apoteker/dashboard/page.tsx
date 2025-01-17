@@ -10,6 +10,7 @@ import Swal from 'sweetalert2';
 const Dashboard: React.FC = () => {
   const [patients, setPatients] = useState([]);
   const [completedCount, setCompletedCount] = useState(0);
+  const [invoicedCount, setInvoicedCount] = useState(0);
   const [pendingCount, setPendingCount] = useState(0);
 
   const router = useRouter();
@@ -40,12 +41,14 @@ const Dashboard: React.FC = () => {
               year: 'numeric'
             })
           }));
-          
           setPatients(formattedData);
           // Count completed and pending prescriptions
           const completed = formattedData.filter((p: any) => p.status_ticket === 'completed').length;
+          const invoiced = formattedData.filter((p: any) => p.status_ticket === 'invoiced').length;
           setCompletedCount(completed);
           setPendingCount(formattedData.length - completed);
+          setCompletedCount(invoiced);
+          setPendingCount(formattedData.length - invoiced);
         }
       });
   };

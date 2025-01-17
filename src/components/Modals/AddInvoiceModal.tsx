@@ -87,8 +87,8 @@ const AddInvoiceModal: React.FC<AddInvoiceModalProps> = ({
           timer: 1500,
           showConfirmButton: false
         });
-        onSuccess();
         onClose();
+        onSuccess();
       } else {
         throw new Error(data.message || 'Gagal menambahkan harga');
       }

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Swal from 'sweetalert2';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisV, faPen, faTrash, faPrint, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisV, faPen, faTrash, faPrint, faCheck, faMoneyBill } from '@fortawesome/free-solid-svg-icons';
 import { useReactToPrint } from "react-to-print";
 
 interface Patient {
@@ -15,6 +15,7 @@ interface Patient {
   nomor_pendaftaran: string;
   diagnosa: string;
   resep_obat: Obat[];
+  harga: string;
   status_ticket: string;
   created_at: string;
   last_update: string;
@@ -33,6 +34,7 @@ interface PatientTableProps {
   onEdit?: (patient: any) => void;
   onDelete?: (ticketId: string) => void;
   onDiagnosis?: (ticketId: string) => void;
+  onAddInvoice?: (patient: any) => void;
 }
 
 const PatientTable: React.FC<PatientTableProps> = ({
@@ -41,7 +43,8 @@ const PatientTable: React.FC<PatientTableProps> = ({
   showRegistrationNumber = true,
   onEdit,
   onDelete,
-  onDiagnosis
+  onDiagnosis,
+  onAddInvoice
 }) => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -165,6 +168,8 @@ const PatientTable: React.FC<PatientTableProps> = ({
     }
   };
 
+  console.log('Current role:', role);
+
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full bg-white">
@@ -221,167 +226,208 @@ const PatientTable: React.FC<PatientTableProps> = ({
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {patients.map((patient, index) => (
-            <tr key={patient.id || index}>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {index + 1}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {patient.nama}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {patient.jenis_kelamin}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {patient.tanggal_lahir}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {patient.usia}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {patient.poliklinik}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {patient.kartu_berobat}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {patient.nomor_pendaftaran}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                <div className="flex justify-center">
-                  <span className={`px-2 py-1 rounded ${patient.status_ticket === 'waiting'
-                    ? 'bg-yellow-100 text-yellow-800 w-full text-center'
-                    : patient.status_ticket === 'completed'
-                      ? 'bg-green-100 text-green-800 w-full text-center'
-                      : patient.status_ticket === 'examined'
-                        ? 'bg-blue-100 text-blue-800 w-full text-center'
-                        : 'bg-gray-100 text-gray-800 w-full text-center'
+          {patients.map((patient, index) => {
+            console.log('Patient data:', {
+              nomor_pendaftaran: patient.nomor_pendaftaran,
+              status_ticket: patient.status_ticket
+            });
+            
+            return (
+              <tr key={patient.id || index}>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {index + 1}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {patient.nama}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {patient.jenis_kelamin}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {patient.tanggal_lahir}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {patient.usia}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {patient.poliklinik}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {patient.kartu_berobat}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {patient.nomor_pendaftaran}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <div className="flex justify-center">
+                    <span className={`px-2 py-1 rounded ${
+                      patient.status_ticket === 'waiting'
+                        ? 'bg-yellow-100 text-yellow-800 w-full text-center'
+                        : patient.status_ticket === 'completed'
+                          ? 'bg-green-100 text-green-800 w-full text-center'
+                          : patient.status_ticket === 'examined'
+                            ? 'bg-blue-100 text-blue-800 w-full text-center'
+                            : patient.status_ticket === 'invoiced'
+                              ? 'bg-purple-100 text-purple-800 w-full text-center'
+                              : 'bg-gray-100 text-gray-800 w-full text-center'
                     }`}>
-                    {patient.status_ticket}
-                  </span>
-                </div>
-              </td>
-              {role === 'dokter' && (
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 relative text-center">
-                  {patient.status_ticket === 'waiting' && (
-                    <>
-                      <button
-                        onClick={() => toggleMenu(patient.nomor_pendaftaran)}
-                        className="text-gray-400 hover:text-gray-600 inline-flex items-center justify-center"
-                      >
-                        <FontAwesomeIcon icon={faEllipsisV} />
-                      </button>
-
-                      {activeMenu === patient.nomor_pendaftaran && (
-                        <div ref={menuRef} className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
-                          <div className="py-1" role="menu">
-                            <button
-                              onClick={() => {
-                                onDiagnosis?.(patient.nomor_pendaftaran);
-                                setActiveMenu(null);
-                              }}
-                              className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full"
-                            >
-                              <FontAwesomeIcon icon={faPen} className="mr-3" />
-                              Diagnosa
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  )}
+                      {patient.status_ticket}
+                    </span>
+                  </div>
                 </td>
-              )}
-              {role === 'admin' && (
-                <>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {patient.created_at}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {patient.last_update}
-                  </td>
-                </>
-              )}
-              {role === 'apoteker' && (
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 relative text-center">
-                  {patient.status_ticket !== 'completed' && (
-                    <>
-                      <button
-                        onClick={() => toggleMenu(patient.nomor_pendaftaran)}
-                        className="text-gray-400 hover:text-gray-600 inline-flex items-center justify-center"
-                      >
-                        <FontAwesomeIcon icon={faEllipsisV} />
-                      </button>
+                {role === 'dokter' && (
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 relative text-center">
+                    {patient.status_ticket === 'waiting' && (
+                      <>
+                        <button
+                          onClick={() => toggleMenu(patient.nomor_pendaftaran)}
+                          className="text-gray-400 hover:text-gray-600 inline-flex items-center justify-center"
+                        >
+                          <FontAwesomeIcon icon={faEllipsisV} />
+                        </button>
 
-                      {activeMenu === patient.nomor_pendaftaran && (
-                        <div ref={menuRef} className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
-                          <div className="py-1" role="menu">
-                            <button
-                              onClick={() => {
-                                handlePrintClick(patient);
-                                setActiveMenu(null);
-                              }}
-                              className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full"
-                            >
-                              <FontAwesomeIcon icon={faPrint} className="mr-3" />
-                              Print
-                            </button>
-                            <button
-                              onClick={() => {
-                                handleComplete(patient.nomor_pendaftaran);
-                                setActiveMenu(null);
-                              }}
-                              className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full"
-                            >
-                              <FontAwesomeIcon icon={faCheck} className="mr-3" />
-                              Complete
-                            </button>
+                        {activeMenu === patient.nomor_pendaftaran && (
+                          <div ref={menuRef} className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                            <div className="py-1" role="menu">
+                              <button
+                                onClick={() => {
+                                  onDiagnosis?.(patient.nomor_pendaftaran);
+                                  setActiveMenu(null);
+                                }}
+                                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full"
+                              >
+                                <FontAwesomeIcon icon={faPen} className="mr-3" />
+                                Diagnosa
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </>
-                  )}
-                </td>
-              )}
-              {role === 'admin' && (
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 relative text-center">
-                  <button
-                    onClick={() => toggleMenu(patient.nomor_pendaftaran)}
-                    className="text-gray-400 hover:text-gray-600 inline-flex items-center justify-center"
-                  >
-                    <FontAwesomeIcon icon={faEllipsisV} />
-                  </button>
+                        )}
+                      </>
+                    )}
+                  </td>
+                )}
+                {role === 'admin' && (
+                  <>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {patient.created_at}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {patient.last_update}
+                    </td>
+                  </>
+                )}
+                {role === 'apoteker' && (
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 relative text-center">
+                    {patient.status_ticket === 'invoiced' && (
+                      <>
+                        <button
+                          onClick={() => toggleMenu(patient.nomor_pendaftaran)}
+                          className="text-gray-400 hover:text-gray-600 inline-flex items-center justify-center"
+                        >
+                          <FontAwesomeIcon icon={faEllipsisV} />
+                        </button>
 
-                  {activeMenu === patient.nomor_pendaftaran && (
-                    <div ref={menuRef} className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
-                      <div className="py-1" role="menu">
+                        {activeMenu === patient.nomor_pendaftaran && (
+                          <div ref={menuRef} className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                            <div className="py-1" role="menu">
+                              <button
+                                onClick={() => {
+                                  handlePrintClick(patient);
+                                  setActiveMenu(null);
+                                }}
+                                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full"
+                              >
+                                <FontAwesomeIcon icon={faPrint} className="mr-3" />
+                                Print
+                              </button>
+                              <button
+                                onClick={() => {
+                                  handleComplete(patient.nomor_pendaftaran);
+                                  setActiveMenu(null);
+                                }}
+                                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full"
+                              >
+                                <FontAwesomeIcon icon={faCheck} className="mr-3" />
+                                Complete
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </td>
+                )}
+                {role === 'administrasi' && (
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 relative text-center">
+                    {patient.status_ticket === 'examined' && (
+                      <>
                         <button
-                          onClick={() => {
-                            onEdit(patient);
-                            setActiveMenu(null);
-                          }}
-                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full"
+                          onClick={() => toggleMenu(patient.nomor_pendaftaran)}
+                          className="text-gray-400 hover:text-gray-600 inline-flex items-center justify-center"
                         >
-                          <FontAwesomeIcon icon={faPen} className="mr-3" />
-                          Edit
+                          <FontAwesomeIcon icon={faEllipsisV} />
                         </button>
-                        <button
-                          onClick={() => {
-                            onDelete(patient.nomor_pendaftaran);
-                            setActiveMenu(null);
-                          }}
-                          className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full"
-                        >
-                          <FontAwesomeIcon icon={faTrash} className="mr-3" />
-                          Delete
-                        </button>
+
+                        {activeMenu === patient.nomor_pendaftaran && (
+                          <div ref={menuRef} className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                            <div className="py-1" role="menu">
+                              <button
+                                onClick={() => {
+                                  onAddInvoice?.(patient);
+                                  setActiveMenu(null);
+                                }}
+                                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full"
+                              >
+                                <FontAwesomeIcon icon={faMoneyBill} className="mr-3" />
+                                Input harga
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </td>
+                )}
+                {role === 'admin' && (
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 relative text-center">
+                    <button
+                      onClick={() => toggleMenu(patient.nomor_pendaftaran)}
+                      className="text-gray-400 hover:text-gray-600 inline-flex items-center justify-center"
+                    >
+                      <FontAwesomeIcon icon={faEllipsisV} />
+                    </button>
+
+                    {activeMenu === patient.nomor_pendaftaran && (
+                      <div ref={menuRef} className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                        <div className="py-1" role="menu">
+                          <button
+                            onClick={() => {
+                              onEdit(patient);
+                              setActiveMenu(null);
+                            }}
+                            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full"
+                          >
+                            <FontAwesomeIcon icon={faPen} className="mr-3" />
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => {
+                              onDelete(patient.nomor_pendaftaran);
+                              setActiveMenu(null);
+                            }}
+                            className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full"
+                          >
+                            <FontAwesomeIcon icon={faTrash} className="mr-3" />
+                            Delete
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </td>
-              )}
-            </tr>
-          ))}
+                    )}
+                  </td>
+                )}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
       {/* Hidden print content */}
@@ -459,6 +505,7 @@ const PatientTable: React.FC<PatientTableProps> = ({
                   <p className='text-md mb-1 text-gray-600'><strong>Usia:</strong> {selectedPatient?.usia} tahun</p>
                   <p className='text-md mb-1 text-gray-600'><strong>Jenis Kelamin:</strong> {selectedPatient?.jenis_kelamin}</p>
                   <p className='text-md mb-1 text-gray-600'><strong>Poliklinik:</strong> {selectedPatient?.poliklinik}</p>
+                  <p className='text-md mb-1 text-gray-600'><strong>Harga:</strong> {selectedPatient?.harga}</p>
                 </div>
               )}
 

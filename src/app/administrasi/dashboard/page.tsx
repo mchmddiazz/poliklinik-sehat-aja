@@ -6,6 +6,7 @@ import Link from "next/link";
 import PatientTable from '@/components/Table/PatientTable';
 import EditPatientModal from '@/components/Modals/EditPatientModal';
 import Swal from 'sweetalert2';
+import AddInvoiceModal from '@/components/Modals/AddInvoiceModal';
 
 interface Patient {
   nomor_pendaftaran: string;
@@ -24,10 +25,10 @@ const Dashboard: React.FC = () => {
   const [waitingCount, setWaitingCount] = useState(0);
   const [examinedCount, setExaminedCount] = useState(0);
   const [completedCount, setCompletedCount] = useState(0);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedPatient, setSelectedPatient] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
+  const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
 
   const router = useRouter();
   const handleLogout = async () => {
@@ -68,10 +69,13 @@ const Dashboard: React.FC = () => {
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          // Add debug logging
-          console.log('Raw patient data:', data.data[0]); // Log first patient data
+          // Filter patients with status 'examined' first
+          const examinedPatients = data.data.filter((p: any) => p.status_ticket === 'examined');
           
-          const patientsWithFormattedDates = data.data.map((patient: any) => {
+          // Add debug logging
+          console.log('Raw patient data:', examinedPatients[0]); // Log first patient data
+          
+          const patientsWithFormattedDates = examinedPatients.map((patient: any) => {
             try {
               return {
                 ...patient,
@@ -100,9 +104,9 @@ const Dashboard: React.FC = () => {
           console.log('Formatted patient data:', patientsWithFormattedDates[0]); // Log formatted data
           
           setPatients(patientsWithFormattedDates);
-          setTotalPatients(data.data.length);
           
-          // Count patients by status
+          // Update counts based on all patients (not just examined)
+          setTotalPatients(data.data.length);
           const waiting = data.data.filter((p: any) => p.status_ticket === 'waiting').length;
           const examined = data.data.filter((p: any) => p.status_ticket === 'examined').length;
           const completed = data.data.filter((p: any) => p.status_ticket === 'completed').length;
@@ -112,161 +116,6 @@ const Dashboard: React.FC = () => {
         }
       });
   }, []);
-
-  const handleEditClick = (patient: any) => {
-    setSelectedPatient(patient);
-    setIsEditModalOpen(true);
-  };
-
-  const handleUpdatePatient = async (updatedData: any) => {
-    try {
-      const response = await fetch(`/api/patients/${updatedData.nomor_pendaftaran}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedData),
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        // Refresh data pasien
-        const patientsResponse = await fetch('/api/patients?role=administrasi&all=true');
-        const patientsData = await patientsResponse.json();
-        if (patientsData.success) {
-          const patientsWithFormattedDates = patientsData.data.map((patient: any) => {
-            try {
-              return {
-                ...patient,
-                tanggal_lahir: patient.tanggal_lahir ? new Date(patient.tanggal_lahir).toLocaleDateString('id-ID', {
-                  day: '2-digit',
-                  month: '2-digit',
-                  year: 'numeric',
-                }) : '-',
-                created_at: patient.created_at ? new Date(patient.created_at).toLocaleDateString('id-ID', {
-                  day: '2-digit',
-                  month: '2-digit',
-                  year: 'numeric',
-                }) : '-',
-                last_update: patient.last_update ? new Date(patient.last_update).toLocaleDateString('id-ID', {
-                  day: '2-digit',
-                  month: '2-digit',
-                  year: 'numeric',
-                }) : '-'
-              };
-            } catch (error) {
-              console.error('Error formatting patient dates:', error, patient);
-              return patient;
-            }
-          });
-          setPatients(patientsWithFormattedDates);
-        }
-        setIsEditModalOpen(false);
-        
-        // Tampilkan SweetAlert untuk sukses
-        Swal.fire({
-          title: 'Berhasil!',
-          text: 'Data pasien berhasil diperbarui',
-          icon: 'success',
-          confirmButtonColor: '#3085d6',
-        });
-      } else {
-        Swal.fire({
-          title: 'Gagal!',
-          text: 'Gagal memperbarui data pasien',
-          icon: 'error',
-          confirmButtonColor: '#3085d6',
-        });
-      }
-    } catch (error) {
-      console.error('Error updating patient:', error);
-      Swal.fire({
-        title: 'Error!',
-        text: 'Terjadi kesalahan saat memperbarui data pasien',
-        icon: 'error',
-        confirmButtonColor: '#3085d6',
-      });
-    }
-  };
-
-  const handleDeletePatient = async (nomorPendaftaran: string) => {
-    // Konfirmasi delete dengan SweetAlert
-    const result = await Swal.fire({
-      title: 'Apakah Anda yakin?',
-      text: "Data yang dihapus tidak dapat dikembalikan!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Ya, hapus!',
-      cancelButtonText: 'Batal'
-    });
-
-    if (result.isConfirmed) {
-      try {
-        const response = await fetch(`/api/patients/${nomorPendaftaran}`, {
-          method: 'DELETE',
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-          // Refresh data pasien
-          const refreshResponse = await fetch('/api/patients?role=administrasi&all=true');
-          const refreshData = await refreshResponse.json();
-          
-          if (refreshData.success) {
-            const patientsWithFormattedDates = refreshData.data.map((patient: any) => {
-              try {
-                return {
-                  ...patient,
-                  tanggal_lahir: patient.tanggal_lahir ? new Date(patient.tanggal_lahir).toLocaleDateString('id-ID', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                  }) : '-',
-                  created_at: patient.created_at ? new Date(patient.created_at).toLocaleDateString('id-ID', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                  }) : '-',
-                  last_update: patient.last_update ? new Date(patient.last_update).toLocaleDateString('id-ID', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                  }) : '-'
-                };
-              } catch (error) {
-                console.error('Error formatting patient dates:', error, patient);
-                return patient;
-              }
-            });
-            setPatients(patientsWithFormattedDates);
-            
-            // Tampilkan SweetAlert sukses
-            Swal.fire(
-              'Terhapus!',
-              'Data pasien berhasil dihapus.',
-              'success'
-            );
-          }
-        } else {
-          Swal.fire(
-            'Gagal!',
-            data.message || 'Gagal menghapus data pasien',
-            'error'
-          );
-        }
-      } catch (error) {
-        console.error('Error deleting patient:', error);
-        Swal.fire(
-          'Error!',
-          'Terjadi kesalahan saat menghapus data pasien',
-          'error'
-        );
-      }
-    }
-  };
 
   // Add these pagination helper functions
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -278,12 +127,29 @@ const Dashboard: React.FC = () => {
     setCurrentPage(pageNumber);
   };
 
+  const handleAddInvoice = (patient: Patient) => {
+    setSelectedPatient(patient);
+    setIsInvoiceModalOpen(true);
+  };
+
+  const refreshData = () => {
+    // Re-fetch your patients data here
+    fetch('/api/patients?role=administrasi&all=true')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          // Your existing data processing logic
+          setPatients(data.data);
+        }
+      });
+  };
+
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
       {/* Header Section */}
       <div className="mb-8 flex flex-col items-center justify-center">
-        <h1 className="text-3xl font-bold text-gray-800 text-center">Admin Dashboard</h1>
-        <p className="mt-2 text-gray-600 text-center">Selamat datang di dashboard admin!</p>
+        <h1 className="text-3xl font-bold text-gray-800 text-center">Administrasi Dashboard</h1>
+        <p className="mt-2 text-gray-600 text-center">Selamat datang di dashboard administrasi!</p>
         <p className="mt-1 text-sm text-gray-500">Overview data keseluruhan sistem</p>
         <Link className="my-2" href="javascript:void(0);" onClick={handleLogout}>Logout</Link>
       </div>
@@ -354,9 +220,8 @@ const Dashboard: React.FC = () => {
             ...patient,
             nomor_urut: indexOfFirstItem + index + 1
           }))}
-          role="admin" 
-          onEdit={handleEditClick}
-          onDelete={handleDeletePatient}
+          role="administrasi"
+          onAddInvoice={handleAddInvoice}
         />
         
         {/* Pagination Controls */}
@@ -414,13 +279,12 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Edit Modal */}
-      {isEditModalOpen && selectedPatient && (
-        <EditPatientModal
+      {selectedPatient && (
+        <AddInvoiceModal
+          isOpen={isInvoiceModalOpen}
+          onClose={() => setIsInvoiceModalOpen(false)}
           patient={selectedPatient}
-          isOpen={isEditModalOpen}
-          onClose={() => setIsEditModalOpen(false)}
-          onUpdate={handleUpdatePatient}
+          onSuccess={refreshData}
         />
       )}
     </div>

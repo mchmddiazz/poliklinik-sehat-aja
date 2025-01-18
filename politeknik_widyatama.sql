@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 16, 2025 at 04:52 AM
+-- Generation Time: Jan 17, 2025 at 05:38 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -39,15 +39,17 @@ CREATE TABLE `pasien` (
   `resep_obat` varchar(255) NOT NULL,
   `status_ticket` text NOT NULL,
   `created_at` datetime NOT NULL,
-  `last_update` datetime NOT NULL
+  `last_update` datetime NOT NULL,
+  `harga` varchar(225) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `pasien`
 --
 
-INSERT INTO `pasien` (`kartu_berobat`, `nama`, `jenis_kelamin`, `tanggal_lahir`, `usia`, `poliklinik`, `nomor_pendaftaran`, `diagnosa`, `resep_obat`, `status_ticket`, `created_at`, `last_update`) VALUES
-(16885360611, 'diaz', 'Laki-laki', '2000-12-01', 24, 'Umum', '11294360616', 'tes', '[{\"resepObat\":\"tes\",\"banyakObat\":\"tes\",\"anjuranPakai\":\"test\",\"keterangan\":\"tess\"}]', 'examined', '2025-01-15 14:32:40', '2025-01-15 23:31:20');
+INSERT INTO `pasien` (`kartu_berobat`, `nama`, `jenis_kelamin`, `tanggal_lahir`, `usia`, `poliklinik`, `nomor_pendaftaran`, `diagnosa`, `resep_obat`, `status_ticket`, `created_at`, `last_update`, `harga`) VALUES
+(15017521522, '1', 'Laki-laki', '0111-11-11', 1, 'Umum', '17547521547', 'tes', '[{\"resepObat\":\"testing\",\"banyakObat\":\"2 kaplet\",\"anjuranPakai\":\"2x1\",\"keterangan\":\"testttt\"}]', 'completed', '2025-01-16 22:15:21', '2025-01-16 22:18:58', ''),
+(16321777249, '1', 'Laki-laki', '1233-03-12', 12, 'Umum', '13001777312', 'tes', '[{\"resepObat\":\"tes\",\"banyakObat\":\"testing\",\"anjuranPakai\":\"1x1\",\"keterangan\":\"=2\"}]', 'completed', '2025-01-17 20:49:37', '2025-01-17 23:26:59', '100000');
 
 --
 -- Triggers `pasien`
@@ -92,7 +94,8 @@ CREATE TABLE `pasien_register` (
 --
 
 INSERT INTO `pasien_register` (`id`, `kartu_berobat`, `created_at`) VALUES
-(3, 16885360611, '2025-01-15 00:00:00');
+(4, 15017521522, '2025-01-16 00:00:00'),
+(5, 16321777249, '2025-01-17 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -114,9 +117,10 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`id`, `username`, `password`, `role`, `created_at`, `last_login`) VALUES
-(1, 'tes', '$2b$10$Ryphon/MTKRhGP1dw3lHvub/KQieE64DGE1hn4yJEWLeKBj0NAOqG', 'admin', '2025-01-02 13:20:46', '2025-01-02 13:20:46'),
-(2, 'dokter', '$2b$10$D.0TEcn/oFXO824VetL3y.GEQQMHA6faGVxTMcpR6Ht1vRUdgC7EK', 'dokter', '2025-01-08 14:57:47', '2025-01-08 14:57:47'),
-(3, 'obat', '$2b$10$SENM36LfkPc/iarmFNrLI.E7xmIP/iXA5zG1IyA.9hA6n39QuHIfu', 'apoteker', '2025-01-08 14:57:47', '2025-01-08 14:57:47');
+(5, 'admin', '$2b$10$z1SJ9d1VVRzM2zKNnUUxUOXchrE2h/pJ.eroSp3snYpT//EWsv6AW', 'admin', '2025-01-16 14:12:54', '2025-01-16 14:12:54'),
+(6, 'dokter', '$2b$10$Kz3nlFmcj9I9FRYZ5MEwMuvE5CfDNGrtBgqbPiIRE2L5BvMAKOS9y', 'dokter', '2025-01-08 14:57:47', '2025-01-08 14:57:47'),
+(7, 'obat', '$2b$10$RFfDfYGULyA8elCOT3AADumBeb0tM3AVKHwXgQd1R..3OqVvJhuAG', 'apoteker', '2025-01-08 14:57:47', '2025-01-08 14:57:47'),
+(8, 'admin2', '$2b$10$4aLz2nbPPuq5yWRpbnmXDu6njeLI6JnKxyo2rDAqXp6tbSjkAnRm2', 'administrasi', '2025-01-16 15:15:54', '2025-01-16 15:15:54');
 
 --
 -- Indexes for dumped tables
@@ -149,13 +153,13 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `pasien_register`
 --
 ALTER TABLE `pasien_register`
-  MODIFY `id` int(1) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(1) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Constraints for dumped tables
@@ -165,7 +169,7 @@ ALTER TABLE `user`
 -- Constraints for table `pasien_register`
 --
 ALTER TABLE `pasien_register`
-  ADD CONSTRAINT `fk_kartu_berobat` FOREIGN KEY (`kartu_berobat`) REFERENCES `pasien` (`kartu_berobat`);
+  ADD CONSTRAINT `fk_kartu_berobat` FOREIGN KEY (`kartu_berobat`) REFERENCES `pasien` (`kartu_berobat`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

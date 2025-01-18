@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -45,38 +46,67 @@ export default function Login() {
   };
 
   return (
-    <div className='container-login'>
-      <div className="h-screen flex items-center justify-center">
-        <form className="w-1/3 bg-white p-8 rounded shadow-md" onSubmit={handleLogin}>
-          <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
-          <div className="mb-4">
-            <label className="block mb-2 text-sm font-medium text-gray-700">Username</label>
-            <input
-              type="text"
-              className="w-full p-2 border rounded"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-white flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="bg-white rounded-lg shadow-2xl p-8">
+          <div className="text-center mb-8">
+            <div className="flex justify-center mb-4">
+            </div>
+            <h1 className="text-3xl font-bold text-gray-800">Poliklinik Sehat Aja</h1>
+            <p className="text-gray-600 mt-2">Please sign in to continue</p>
           </div>
-          <div className="mb-4">
-            <label className="block mb-2 text-sm font-medium text-gray-700">Password</label>
-            <input
-              type="password"
-              className="w-full p-2 border rounded"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-          >
-            Login
-          </button>
-        </form>
+
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Username
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                  placeholder="Enter your username"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  type="password"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  placeholder="Enter your password"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors duration-200 transform hover:scale-[1.02]"
+            >
+              Sign in
+            </button>
+          </form>
+
+          {/* <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600">
+              Having trouble signing in?{' '}
+              <a href="#" className="text-blue-600 hover:underline">
+                Contact support
+              </a>
+            </p>
+          </div> */}
+        </div>
       </div>
     </div>
   );
-};
+}

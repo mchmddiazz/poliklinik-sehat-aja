@@ -19,7 +19,9 @@ const UnauthorizedPage: React.FC = () => {
     
     if (token) {
       try {
+        // Memisahkan token untuk mendapatkan role user
         const [userRole] = token.split('-');
+        // Mapping role ke dashboard masing-masing
         const roleDashboards: { [key: string]: string } = {
           admin: '/admin/dashboard',
           dokter: '/dokter/dashboard',
@@ -27,6 +29,7 @@ const UnauthorizedPage: React.FC = () => {
           administrasi: '/administrasi/dashboard'
         };
         
+        // Set route berdasarkan role
         if (userRole && roleDashboards[userRole]) {
           setHomeRoute(roleDashboards[userRole]);
         }

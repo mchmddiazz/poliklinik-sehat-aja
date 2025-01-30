@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 17, 2025 at 05:38 PM
+-- Generation Time: Jan 30, 2025 at 09:28 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -48,8 +48,8 @@ CREATE TABLE `pasien` (
 --
 
 INSERT INTO `pasien` (`kartu_berobat`, `nama`, `jenis_kelamin`, `tanggal_lahir`, `usia`, `poliklinik`, `nomor_pendaftaran`, `diagnosa`, `resep_obat`, `status_ticket`, `created_at`, `last_update`, `harga`) VALUES
-(15017521522, '1', 'Laki-laki', '0111-11-11', 1, 'Umum', '17547521547', 'tes', '[{\"resepObat\":\"testing\",\"banyakObat\":\"2 kaplet\",\"anjuranPakai\":\"2x1\",\"keterangan\":\"testttt\"}]', 'completed', '2025-01-16 22:15:21', '2025-01-16 22:18:58', ''),
-(16321777249, '1', 'Laki-laki', '1233-03-12', 12, 'Umum', '13001777312', 'tes', '[{\"resepObat\":\"tes\",\"banyakObat\":\"testing\",\"anjuranPakai\":\"1x1\",\"keterangan\":\"=2\"}]', 'completed', '2025-01-17 20:49:37', '2025-01-17 23:26:59', '100000');
+(10450291013, 'defrannnnn', 'Laki-laki', '2004-05-14', 20, 'Umum', '16244291049', 'fluu', '[{\"resepObat\":\"ultra flu\",\"banyakObat\":\"2\",\"anjuranPakai\":\"2x 1\",\"keterangan\":\"-\"}]', 'completed', '2025-01-18 16:24:51', '2025-01-18 16:32:06', '20000'),
+(14744358369, 'defran', 'Laki-laki', '2000-12-12', 20, 'Penyakit Dalam', '14997358390', 'pusing', '[{\"resepObat\":\"paracetamol\",\"banyakObat\":\"12\",\"anjuranPakai\":\"2 x 1\",\"keterangan\":\"setelah makan\"},{\"resepObat\":\"aspirin\",\"banyakObat\":\"12\",\"anjuranPakai\":\"2 x 1\",\"keterangan\":\"setelah makan\"}]', 'completed', '2025-01-27 23:45:58', '2025-01-27 23:59:26', '15000');
 
 --
 -- Triggers `pasien`
@@ -94,8 +94,8 @@ CREATE TABLE `pasien_register` (
 --
 
 INSERT INTO `pasien_register` (`id`, `kartu_berobat`, `created_at`) VALUES
-(4, 15017521522, '2025-01-16 00:00:00'),
-(5, 16321777249, '2025-01-17 00:00:00');
+(6, 10450291013, '2025-01-18 00:00:00'),
+(7, 14744358369, '2025-01-27 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -153,7 +153,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `pasien_register`
 --
 ALTER TABLE `pasien_register`
-  MODIFY `id` int(1) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(1) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `user`
